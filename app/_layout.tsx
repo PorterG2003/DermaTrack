@@ -1,20 +1,46 @@
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { Platform } from 'react-native'
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexReactClient } from "convex/react";
 import { Stack } from "expo-router";
-import { ThemeProvider } from "@shopify/restyle";
-import { theme } from "./theme";
+import * as SecureStore from "expo-secure-store";
+import { ThemeProvider as RestyleThemeProvider } from "@shopify/restyle";
+import { ThemeProvider, useThemeContext } from "../src/theme";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
 });
 
+const secureStorage = {
+  getItem: SecureStore.getItemAsync,
+  setItem: SecureStore.setItemAsync,
+  removeItem: SecureStore.deleteItemAsync,
+};
+
+function AppContent() {
+  const { theme } = useThemeContext();
+  
+  return (
+    <RestyleThemeProvider theme={theme}>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    </RestyleThemeProvider>
+  );
+}
+
 export default function RootLayout() {
   return (
-    <ConvexProvider client={convex}>
-      <ThemeProvider theme={theme}>
-        <Stack>
-          <Stack.Screen name="index" />
-        </Stack>
+    <ConvexAuthProvider
+      client={convex}
+      storage={
+        Platform.OS === "android" || Platform.OS === "ios"
+          ? secureStorage
+          : undefined
+      }
+    >
+      <ThemeProvider>
+        <AppContent />
       </ThemeProvider>
-    </ConvexProvider>
+    </ConvexAuthProvider>
   );
 }

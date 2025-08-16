@@ -1,20 +1,20 @@
 import React from 'react';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { createBox, createText, useTheme } from '@shopify/restyle';
-import type { Theme } from '../theme';
+import { createBox, createText } from '@shopify/restyle';
+import { useThemeContext } from '../../../src/theme';
 import { ViewStyle } from 'react-native';
 
-const Box = createBox<Theme>();
-const Text = createText<Theme>();
+const Box = createBox<ReturnType<typeof useThemeContext>['theme']>();
+const Text = createText<ReturnType<typeof useThemeContext>['theme']>();
 
 type GlassProps = {
   children?: React.ReactNode;
   intensity?: number;
   tint?: 'light' | 'dark' | 'default';
   border?: boolean;
-  padding?: keyof Theme['spacing'];
-  radius?: keyof Theme['borderRadii'];
+  padding?: keyof ReturnType<typeof useThemeContext>['theme']['spacing'];
+  radius?: keyof ReturnType<typeof useThemeContext>['theme']['borderRadii'];
   style?: ViewStyle | ViewStyle[];
 };
 
@@ -27,7 +27,7 @@ export function GlassCard({
   radius = 'xl',
   style,
 }: GlassProps) {
-  const theme = useTheme<Theme>();
+  const { theme } = useThemeContext();
   return (
     <Box borderRadius={radius} overflow="hidden" style={style}>
       <BlurView intensity={intensity} tint={tint} style={{ width: '100%', height: '100%' }}>
@@ -60,4 +60,3 @@ export function GlassCard({
 }
 
 export { Box, Text };
-

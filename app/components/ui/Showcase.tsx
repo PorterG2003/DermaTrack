@@ -7,7 +7,7 @@ import {
   Spacer, 
   Divider, 
   Text,
-  Box 
+  Box
 } from './index';
 
 export function Showcase() {
@@ -96,7 +96,7 @@ export function Showcase() {
         </Container>
       </Container>
 
-      <Spacer size="l" />
+      <Spacer size="m" />
     </ScrollView>
   );
 }

@@ -5,6 +5,8 @@ import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { ThemeProvider as RestyleThemeProvider } from "@shopify/restyle";
 import { ThemeProvider, useThemeContext } from "../src/theme";
+import { LoadingScreen } from "./components";
+import { useAppLoading } from "./hooks/useAppLoading";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
@@ -18,6 +20,11 @@ const secureStorage = {
 
 function AppContent() {
   const { theme } = useThemeContext();
+  const { isLoading, loadingMessage } = useAppLoading();
+  
+  if (isLoading) {
+    return <LoadingScreen message={loadingMessage} />;
+  }
   
   return (
     <RestyleThemeProvider theme={theme}>

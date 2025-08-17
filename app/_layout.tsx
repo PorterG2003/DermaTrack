@@ -4,9 +4,9 @@ import { ConvexReactClient } from "convex/react";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { ThemeProvider as RestyleThemeProvider } from "@shopify/restyle";
-import { ThemeProvider, useThemeContext } from "../src/theme";
-import { LoadingScreen } from "./components";
-import { useAppLoading } from "./hooks/useAppLoading";
+import { ThemeProvider, useThemeContext } from "../theme";
+import { LoadingScreen } from "../components";
+import { useAppLoading } from "../hooks/useAppLoading";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,

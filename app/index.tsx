@@ -1,36 +1,30 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useThemeContext } from "../src/theme/ThemeContext";
+import { useThemeContext } from "../theme/ThemeContext";
 import { View, TouchableOpacity } from "react-native";
-import { AuthScreen } from "./screens";
+import { AuthScreen } from "../screens";
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
-import { Text, Box } from "./components";
+import { Text, Box } from "../components";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { 
-  OnboardingFlow, 
-  WelcomeStep, 
-  GenderStep, 
-  AgeRangeStep, 
-  SkinTypeStep, 
-  PrimaryConcernsStep, 
-  PhotoPermissionsStep, 
-  NotificationsStep, 
-  GoalsStep, 
-  CompleteStep 
-} from "./screens/onboarding";
-import { useOnboarding } from "./hooks/useOnboarding";
+import {
+  OnboardingFlow,
+  WelcomeStep,
+  GenderStep,
+  DateOfBirthStep,
+  SkinTypeStep,
+  PrimaryConcernsStep,
+  PhotoPermissionsStep,
+  NotificationsStep,
+  GoalsStep,
+  CompleteStep
+} from "../screens/onboarding";
+import { useOnboardingData } from "../hooks/useOnboardingData";
 
 export default function Index() {
   const { theme } = useThemeContext();
   const { signOut } = useAuthActions();
-  const { isOnboardingComplete, isLoading: onboardingLoading, markOnboardingComplete, resetOnboarding } = useOnboarding();
-  
-  // Debug logging
-  console.log('Index - theme received:', theme);
-  console.log('Index - gradients:', theme.gradients);
-  console.log('Index - background colors:', theme.gradients.background.colors);
-  console.log('Index - onboarding state:', { isOnboardingComplete, onboardingLoading });
-  
+  const { isOnboardingComplete, isLoading: onboardingLoading, markOnboardingComplete, resetOnboarding } = useOnboardingData();
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -38,60 +32,34 @@ export default function Index() {
       console.error('Sign out error:', error);
     }
   };
-  
+
   const handleResetOnboarding = async () => {
     await resetOnboarding();
   };
-  
-  // Define onboarding steps
+
+  console.log('🔍 Step components check:');
+  console.log('WelcomeStep:', WelcomeStep);
+  console.log('GenderStep:', GenderStep);
+  console.log('DateOfBirthStep:', DateOfBirthStep);
+  console.log('SkinTypeStep:', SkinTypeStep);
+  console.log('PrimaryConcernsStep:', PrimaryConcernsStep);
+  console.log('PhotoPermissionsStep:', PhotoPermissionsStep);
+  console.log('NotificationsStep:', NotificationsStep);
+  console.log('GoalsStep:', GoalsStep);
+  console.log('CompleteStep:', CompleteStep);
+
   const onboardingSteps = [
-    {
-      id: 'welcome',
-      title: 'Welcome',
-      component: WelcomeStep,
-    },
-    {
-      id: 'gender',
-      title: 'Gender',
-      component: GenderStep,
-    },
-    {
-      id: 'ageRange',
-      title: 'Age Range',
-      component: AgeRangeStep,
-    },
-    {
-      id: 'skinType',
-      title: 'Skin Type',
-      component: SkinTypeStep,
-    },
-    {
-      id: 'primaryConcerns',
-      title: 'Primary Concerns',
-      component: PrimaryConcernsStep,
-    },
-    {
-      id: 'photoPermissions',
-      title: 'Camera Access',
-      component: PhotoPermissionsStep,
-    },
-    {
-      id: 'notifications',
-      title: 'Notifications',
-      component: NotificationsStep,
-    },
-    {
-      id: 'goals',
-      title: 'Goals',
-      component: GoalsStep,
-    },
-    {
-      id: 'complete',
-      title: 'Complete',
-      component: CompleteStep,
-    },
+    { id: 'welcome', title: 'Welcome to DermaTrack', component: WelcomeStep },
+    { id: 'gender', title: 'About You', component: GenderStep },
+    { id: 'dateOfBirth', title: 'Your Age', component: DateOfBirthStep },
+    { id: 'skinType', title: 'Acne-Prone Skin Type', component: SkinTypeStep },
+    { id: 'primaryConcerns', title: 'Acne Concerns', component: PrimaryConcernsStep },
+    { id: 'photoPermissions', title: 'Track Progress', component: PhotoPermissionsStep },
+    { id: 'notifications', title: 'Reminders', component: NotificationsStep },
+    { id: 'goals', title: 'Acne Goals', component: GoalsStep },
+    { id: 'complete', title: 'Ready to Start', component: CompleteStep },
   ];
-  
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <LinearGradient
@@ -125,8 +93,7 @@ export default function Index() {
                 <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
                   You are successfully signed in with Google
                 </Text>
-                
-                {/* Temporary Reset Button for Testing */}
+
                 <TouchableOpacity
                   onPress={handleResetOnboarding}
                   style={{
@@ -141,7 +108,7 @@ export default function Index() {
                 >
                   <Text variant="subtitle" color="textPrimary">Reset Onboarding (Testing)</Text>
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
                   onPress={handleSignOut}
                   style={{

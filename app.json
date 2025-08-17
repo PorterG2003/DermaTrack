@@ -4,24 +4,26 @@
     "slug": "DermaTrack",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png",
     "scheme": "dermatrack",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/images/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/AppIcons/playstore.png",
+        "backgroundColor": "#000000"
       },
+      "icon": "./assets/images/AppIcons/android/mipmap-xxxhdpi/ic_launcher.png",
       "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png"
     },
     "plugins": [
       "expo-router",
@@ -31,7 +33,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#000000"
         }
       ],
       "expo-secure-store"

@@ -42,7 +42,7 @@ export function Container({
         backgroundColor: 'transparent',
       },
       glass: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: theme.colors.backgroundMuted,
         borderWidth: 1,
         borderColor: theme.colors.glassBorder,
         borderRadius: theme.borderRadii.l,

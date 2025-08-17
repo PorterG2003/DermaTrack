@@ -44,7 +44,7 @@ export function Divider({
         borderColor: theme.colors.glassBorder,
       },
       glass: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: theme.colors.backgroundMuted,
         shadowColor: theme.colors.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,

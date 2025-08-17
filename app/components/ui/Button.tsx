@@ -57,7 +57,7 @@ export function Button({
         elevation: 6,
       },
       glass: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: theme.colors.backgroundMuted,
         borderWidth: 1,
         borderColor: theme.colors.glassBorder,
         shadowColor: theme.colors.black,

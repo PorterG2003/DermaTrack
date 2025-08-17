@@ -71,7 +71,7 @@ export function Input({
         borderColor: theme.colors.glassBorder,
       },
       glass: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: theme.colors.backgroundMuted,
         borderColor: isFocused ? theme.colors.primary : theme.colors.glassBorder,
         shadowColor: theme.colors.black,
         shadowOffset: { width: 0, height: 2 },

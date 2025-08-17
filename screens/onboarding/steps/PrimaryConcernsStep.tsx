@@ -3,7 +3,7 @@ import { TouchableOpacity, ScrollView, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 interface PrimaryConcernsStepProps {
   step: any;
@@ -14,8 +14,8 @@ interface PrimaryConcernsStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 type SkinConcern = 'acne' | 'blackheads' | 'whiteheads' | 'cysticAcne' | 'acneScars' | 'acneMarks';
@@ -25,18 +25,18 @@ export function PrimaryConcernsStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: PrimaryConcernsStepProps) {
   const { theme } = useThemeContext();
   const [selectedConcerns, setSelectedConcerns] = useState<SkinConcern[]>([]);
   
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.primaryConcerns) {
-      setSelectedConcerns(onboardingData.primaryConcerns as SkinConcern[]);
+    if (profile.primaryConcerns) {
+      setSelectedConcerns(profile.primaryConcerns as SkinConcern[]);
     }
-  }, [onboardingData.primaryConcerns]);
+  }, [profile.primaryConcerns]);
   
   const handleConcernToggle = async (concern: SkinConcern) => {
     let newConcerns: SkinConcern[];
@@ -47,7 +47,7 @@ export function PrimaryConcernsStep({
     }
     setSelectedConcerns(newConcerns);
     // Save to onboarding data
-    await updateOnboardingData({ primaryConcerns: newConcerns });
+    await updateProfile({ primaryConcerns: newConcerns });
   };
   
   const concerns: { value: SkinConcern; label: string; emoji: string; description: string }[] = [

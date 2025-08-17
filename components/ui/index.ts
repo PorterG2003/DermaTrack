@@ -1,7 +1,10 @@
 export { Button } from './Button';
 export { Container } from './Container';
-export { Input } from './Input';
-export { Spacer } from './Spacer';
 export { Divider } from './Divider';
-export { GlassCard, Box, Text } from './Glass';
+export { Glass, Box, Text } from './Glass';
+export { Input } from './Input';
 export { LoadingScreen } from './LoadingScreen';
+export { Showcase } from './Showcase';
+export { Spacer } from './Spacer';
+export { StepIcon } from './StepIcon';
+export { FaceSilhouette } from './FaceSilhouette';

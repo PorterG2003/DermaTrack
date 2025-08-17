@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, ScrollView, View } from 'react-native';
-import { Box, Text } from '../../../components';
+import { Box, Text, StepIcon } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 interface GoalsStepProps {
   step: any;
@@ -14,8 +14,8 @@ interface GoalsStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 type SkinGoal = 'clearAcne' | 'preventBreakouts' | 'reduceScars' | 'buildRoutine' | 'trackProgress';
@@ -25,18 +25,18 @@ export function GoalsStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: GoalsStepProps) {
   const { theme } = useThemeContext();
   const [selectedGoals, setSelectedGoals] = useState<SkinGoal[]>([]);
   
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.goals) {
-      setSelectedGoals(onboardingData.goals as SkinGoal[]);
+    if (profile.goals) {
+      setSelectedGoals(profile.goals as SkinGoal[]);
     }
-  }, [onboardingData.goals]);
+  }, [profile.goals]);
   
   const handleGoalToggle = async (goal: SkinGoal) => {
     let newGoals: SkinGoal[];
@@ -47,7 +47,7 @@ export function GoalsStep({
     }
     setSelectedGoals(newGoals);
     // Save to onboarding data
-    await updateOnboardingData({ goals: newGoals });
+    await updateProfile({ goals: newGoals });
   };
   
   const goals: { value: SkinGoal; label: string; emoji: string; description: string }[] = [
@@ -119,26 +119,11 @@ export function GoalsStep({
         </Text>
         
         {/* Goals Icon */}
-        <View style={{
-          width: 140,
-          height: 140,
-          borderRadius: theme.borderRadii.xl,
-          backgroundColor: theme.colors.backgroundMuted,
-          borderWidth: 1,
-          borderColor: theme.colors.glassBorder,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: theme.spacing.xl,
-          shadowColor: theme.colors.primary,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.3,
-          shadowRadius: 16,
-          elevation: 8,
-        }}>
-          <Text variant="title" color="primary" fontSize={64} height={140} lineHeight={140}>
-            🎯
-          </Text>
-        </View>
+        <StepIcon 
+          icon="🎯"
+          size="large"
+          variant="emoji"
+        />
         
         {/* Goals Selection */}
         <View style={{ width: '100%', marginBottom: theme.spacing.xl }}>

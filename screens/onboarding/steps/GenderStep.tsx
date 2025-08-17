@@ -3,7 +3,7 @@ import { TouchableOpacity, ScrollView, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 type Gender = 'male' | 'female';
 
@@ -16,8 +16,8 @@ interface GenderStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 export function GenderStep({
@@ -25,23 +25,40 @@ export function GenderStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: GenderStepProps) {
   const { theme } = useThemeContext();
   const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
 
+  // Additional safety check - if profile is somehow still null, provide a fallback
+  if (!profile) {
+    console.warn('GenderStep: Profile is null, showing loading state');
+    return (
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ 
+          flex: 1, 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          padding: theme.spacing.l 
+        }}>
+          <Text variant="title" color="textPrimary">Loading...</Text>
+        </View>
+      </ScrollView>
+    );
+  }
+
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.gender) {
-      setSelectedGender(onboardingData.gender);
+    if (profile.gender) {
+      setSelectedGender(profile.gender);
     }
-  }, [onboardingData.gender]);
+  }, [profile.gender]);
 
   const handleGenderSelect = async (gender: Gender) => {
     setSelectedGender(gender);
     // Save to onboarding data
-    await updateOnboardingData({ gender });
+    await updateProfile({ gender });
   };
 
   return (

@@ -52,6 +52,22 @@ const schema = defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_onboardingCompleted", ["onboardingCompleted"]),
+
+  // User acne progress photos
+  photos: defineTable({
+    userId: v.string(), // OAuth subject (string, not Convex ID)
+    storageId: v.id("_storage"), // Reference to Convex storage
+    photoType: v.union(
+      v.literal("left"), 
+      v.literal("center"), 
+      v.literal("right")
+    ),
+    sessionId: v.string(), // Groups photos taken in same session
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_sessionId", ["sessionId"])
+    .index("by_userId_photoType", ["userId", "photoType"]),
 });
 
 export default schema;

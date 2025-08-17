@@ -3,7 +3,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 interface NotificationsStepProps {
   step: any;
@@ -14,8 +14,8 @@ interface NotificationsStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 type NotificationPreference = 'daily' | 'weekly' | 'important' | 'none';
@@ -25,23 +25,23 @@ export function NotificationsStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: NotificationsStepProps) {
   const { theme } = useThemeContext();
   const [selectedPreference, setSelectedPreference] = useState<NotificationPreference | null>(null);
   
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.notificationPreference) {
-      setSelectedPreference(onboardingData.notificationPreference);
+    if (profile.notificationPreference) {
+      setSelectedPreference(profile.notificationPreference);
     }
-  }, [onboardingData.notificationPreference]);
+  }, [profile.notificationPreference]);
   
   const handlePreferenceSelect = async (preference: NotificationPreference) => {
     setSelectedPreference(preference);
     // Save to onboarding data
-    await updateOnboardingData({ notificationPreference: preference });
+    await updateProfile({ notificationPreference: preference });
   };
   
   const preferences: { value: NotificationPreference; label: string; emoji: string; description: string }[] = [

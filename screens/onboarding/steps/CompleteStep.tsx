@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 interface CompleteStepProps {
   step: any;
@@ -14,8 +14,8 @@ interface CompleteStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 export function CompleteStep({
@@ -23,8 +23,8 @@ export function CompleteStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: CompleteStepProps) {
   const { theme } = useThemeContext();
   
@@ -155,7 +155,7 @@ export function CompleteStep({
         marginTop: theme.spacing.xl
       }}>
         <OnboardingButton
-          title="Start Your Clear Skin Journey"
+          title="Take Your First Progress Photos"
           onPress={onNext}
           variant="primary"
           disabled={!canProceed}

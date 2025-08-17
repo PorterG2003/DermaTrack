@@ -3,7 +3,7 @@ import { TouchableOpacity, ScrollView, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 interface SkinTypeStepProps {
   step: any;
@@ -14,8 +14,8 @@ interface SkinTypeStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 type SkinType = 'oily' | 'dry' | 'combination' | 'normal' | 'sensitive';
@@ -25,23 +25,23 @@ export function SkinTypeStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: SkinTypeStepProps) {
   const { theme } = useThemeContext();
   const [selectedSkinType, setSelectedSkinType] = useState<SkinType | null>(null);
   
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.skinType) {
-      setSelectedSkinType(onboardingData.skinType);
+    if (profile.skinType) {
+      setSelectedSkinType(profile.skinType);
     }
-  }, [onboardingData.skinType]);
+  }, [profile.skinType]);
   
   const handleSkinTypeSelect = async (skinType: SkinType) => {
     setSelectedSkinType(skinType);
     // Save to onboarding data
-    await updateOnboardingData({ skinType });
+    await updateProfile({ skinType });
   };
   
   const skinTypes: { value: SkinType; label: string; emoji: string; description: string }[] = [

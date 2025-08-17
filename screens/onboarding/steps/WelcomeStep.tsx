@@ -1,6 +1,6 @@
 import React from 'react';
-import { ScrollView, View, Image } from 'react-native';
-import { Text } from '../../../components';
+import { ScrollView, View } from 'react-native';
+import { Text, StepIcon } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
 
@@ -41,33 +41,11 @@ export function WelcomeStep({
         width: '100%'
       }}>
         {/* Welcome Icon/Logo */}
-        <View style={{
-          width: 140,
-          height: 140,
-          borderRadius: theme.borderRadii.xl,
-          backgroundColor: theme.colors.backgroundMuted,
-          borderWidth: 1,
-          borderColor: theme.colors.glassBorder,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: theme.spacing.xl,
-          shadowColor: theme.colors.primary,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.3,
-          shadowRadius: 16,
-          elevation: 8,
-          overflow: 'hidden',
-        }}>
-          <Image
-            source={require('../../../assets/images/icon.png')}
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: theme.borderRadii.l,
-            }}
-            resizeMode="contain"
-          />
-        </View>
+        <StepIcon 
+          icon="🩹"
+          size="large"
+          variant="emoji"
+        />
         
         {/* Welcome Title */}
         <Text 

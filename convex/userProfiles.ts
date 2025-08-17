@@ -6,12 +6,27 @@ export const getProfile = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    console.log('🔍 getProfile query:', { 
+      hasIdentity: !!identity, 
+      identitySubject: identity?.subject,
+      identityEmail: identity?.email 
+    });
+    
+    if (!identity) {
+      console.log('🔍 getProfile: No identity found, returning null');
+      return null;
+    }
 
     const profile = await ctx.db
       .query("userProfiles")
       .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
       .first();
+
+    console.log('🔍 getProfile: Profile found:', { 
+      hasProfile: !!profile, 
+      profileId: profile?._id,
+      profileUserId: profile?.userId 
+    });
 
     return profile;
   },
@@ -124,5 +139,89 @@ export const isOnboardingCompleted = query({
       .first();
 
     return profile?.onboardingCompleted ?? false;
+  },
+});
+
+// Reset onboarding progress
+export const resetOnboarding = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const profile = await ctx.db
+      .query("userProfiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .first();
+
+    if (profile) {
+      return await ctx.db.patch(profile._id, {
+        onboardingCompleted: false,
+        updatedAt: Date.now(),
+      });
+    } else {
+      throw new Error("Profile not found");
+    }
+  },
+});
+
+// Photo upload mutations
+export const generatePhotoUploadUrl = mutation({
+  handler: async (ctx) => {
+    // TODO: Add authentication check here
+    // const identity = await ctx.auth.getUserIdentity();
+    // if (!identity) {
+    //   throw new Error("Not authenticated");
+    // }
+    
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const savePhoto = mutation({
+  args: {
+    storageId: v.id("_storage"),
+    photoType: v.union(v.literal("left"), v.literal("center"), v.literal("right")),
+    sessionId: v.string(),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // TODO: Add authentication check here
+    // const identity = await ctx.auth.getUserIdentity();
+    // if (!identity) {
+    //   throw new Error("Not authenticated");
+    // }
+    
+    const photoId = await ctx.db.insert("photos", {
+      userId: args.userId,
+      storageId: args.storageId,
+      photoType: args.photoType,
+      sessionId: args.sessionId,
+      createdAt: Date.now(),
+    });
+    
+    return photoId;
+  },
+});
+
+export const getPhotosBySession = query({
+  args: { sessionId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("photos")
+      .withIndex("by_sessionId", (q) => q.eq("sessionId", args.sessionId))
+      .order("asc")
+      .collect();
+  },
+});
+
+export const getPhotosByUser = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("photos")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
   },
 });

@@ -4,7 +4,7 @@ import { Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { Input } from '../../../components/ui';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 
 interface DateOfBirthStepProps {
   step: any;
@@ -15,8 +15,8 @@ interface DateOfBirthStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 export function DateOfBirthStep({
@@ -24,8 +24,8 @@ export function DateOfBirthStep({
   onPrevious,
   isFirstStep,
   isLastStep,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: DateOfBirthStepProps) {
   const { theme } = useThemeContext();
   const [month, setMonth] = useState('');
@@ -34,12 +34,12 @@ export function DateOfBirthStep({
 
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.dateOfBirth) {
-      const date = new Date(onboardingData.dateOfBirth);
+    if (profile.dateOfBirth) {
+      const date = new Date(profile.dateOfBirth);
       setMonth((date.getMonth() + 1).toString().padStart(2, '0'));
       setYear(date.getFullYear().toString());
     }
-  }, [onboardingData.dateOfBirth]);
+  }, [profile.dateOfBirth]);
 
   const handleMonthChange = (text: string) => {
     // Only allow numbers and limit to 2 digits
@@ -67,7 +67,7 @@ export function DateOfBirthStep({
       const yearNum = parseInt(year);
       const date = new Date(yearNum, monthNum, 1, 12, 0, 0, 0); // Use noon to avoid timezone issues
       
-      await updateOnboardingData({ dateOfBirth: date.getTime() });
+      await updateProfile({ dateOfBirth: date.getTime() });
       onNext();
     } catch (error) {
       console.error('Error saving date of birth:', error);

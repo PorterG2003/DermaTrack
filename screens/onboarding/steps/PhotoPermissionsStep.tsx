@@ -3,7 +3,7 @@ import { TouchableOpacity, Alert, ScrollView, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
-import { OnboardingData } from '../../../hooks/useOnboardingData';
+import { Profile } from '../../../hooks/useProfile';
 import * as ImagePicker from 'expo-image-picker';
 
 interface PhotoPermissionsStepProps {
@@ -15,8 +15,8 @@ interface PhotoPermissionsStepProps {
   onGoToStep: (index: number) => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  onboardingData: OnboardingData;
-  updateOnboardingData: (data: Partial<OnboardingData>) => Promise<void>;
+  profile: Profile;
+  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
 export function PhotoPermissionsStep({
@@ -24,18 +24,18 @@ export function PhotoPermissionsStep({
   isFirstStep,
   isLastStep,
   onPrevious,
-  onboardingData,
-  updateOnboardingData
+  profile,
+  updateProfile
 }: PhotoPermissionsStepProps) {
   const { theme } = useThemeContext();
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
   
   // Load existing data when component mounts
   useEffect(() => {
-    if (onboardingData.cameraPermission !== undefined) {
-      setPermissionGranted(onboardingData.cameraPermission);
+    if (profile.cameraPermission !== undefined) {
+      setPermissionGranted(profile.cameraPermission);
     }
-  }, [onboardingData.cameraPermission]);
+  }, [profile.cameraPermission]);
   
   const requestCameraPermission = async () => {
     try {
@@ -44,7 +44,7 @@ export function PhotoPermissionsStep({
       if (status === 'granted') {
         setPermissionGranted(true);
         // Save to onboarding data
-        await updateOnboardingData({ cameraPermission: true });
+        await updateProfile({ cameraPermission: true });
         Alert.alert(
           'Permission Granted! 📸',
           'You can now take photos to track your skin health.',
@@ -53,7 +53,7 @@ export function PhotoPermissionsStep({
       } else {
         setPermissionGranted(false);
         // Save to onboarding data
-        await updateOnboardingData({ cameraPermission: false });
+        await updateProfile({ cameraPermission: false });
         Alert.alert(
           'Camera Permission Required',
           'DermaTrack needs camera access to help you track your skin. Please enable it in your device settings.',
@@ -66,22 +66,8 @@ export function PhotoPermissionsStep({
     } catch (error) {
       console.error('Error requesting camera permission:', error);
       setPermissionGranted(false);
-      await updateOnboardingData({ cameraPermission: false });
+      await updateProfile({ cameraPermission: false });
     }
-  };
-  
-  const skipPermissions = async () => {
-    Alert.alert(
-      'Skip Permissions?',
-      'You can always enable camera access later in settings. Some features may be limited.',
-      [
-        { text: 'Skip for Now', onPress: async () => {
-          await updateOnboardingData({ cameraPermission: false });
-          onNext();
-        }, style: 'cancel' },
-        { text: 'Try Again', onPress: requestCameraPermission }
-      ]
-    );
   };
   
   // User can proceed if they've made a decision (either granted permission or chose to skip)

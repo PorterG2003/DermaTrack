@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
-import { useThemeContext } from '../../theme/ThemeContext';
 import { Box, Text } from '../../components';
 import { useProfile } from '../../hooks/useProfile';
+import { useThemeContext } from '../../theme/ThemeContext';
 
 interface OnboardingStep {
   id: string;

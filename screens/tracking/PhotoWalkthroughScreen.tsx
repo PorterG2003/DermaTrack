@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
-import { Text, StepIcon, FaceSilhouette } from '../../components';
+import { ScrollView, View } from 'react-native';
+import { FaceSilhouette, StepIcon, Text } from '../../components';
 import { OnboardingButton } from '../../components/onboarding';
 import { useThemeContext } from '../../theme/ThemeContext';
 

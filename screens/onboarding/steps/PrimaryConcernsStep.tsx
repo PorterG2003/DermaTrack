@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, ScrollView, View } from 'react-native';
-import { Box, Text } from '../../../components';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
-import { useThemeContext } from '../../../theme/ThemeContext';
 import { Profile } from '../../../hooks/useProfile';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 interface PrimaryConcernsStepProps {
   step: any;

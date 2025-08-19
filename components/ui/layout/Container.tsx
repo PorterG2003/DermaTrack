@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ViewStyle } from 'react-native';
-import { useThemeContext } from '../../theme/ThemeContext';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 type ContainerVariant = 'default' | 'glass' | 'card' | 'section';
 type ContainerSize = 'compact' | 'normal' | 'spacious';

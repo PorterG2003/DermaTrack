@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { TextInput, TextInputProps, View, Text, ViewStyle, TextStyle } from 'react-native';
-import { useThemeContext } from '../../theme/ThemeContext';
+import { Text, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 type InputVariant = 'default' | 'glass' | 'outline';
 type InputSize = 'small' | 'medium' | 'large';

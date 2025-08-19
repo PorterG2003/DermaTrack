@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { Image, View } from 'react-native';
+import { useThemeContext } from '../../../theme/ThemeContext';
 import { Text } from '../index';
-import { useThemeContext } from '../../theme/ThemeContext';
 
 interface StepIconProps {
   icon: string | React.ReactNode;

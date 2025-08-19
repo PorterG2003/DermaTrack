@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import { Text, StepIcon } from '../../../components';
+import { StepIcon, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
 

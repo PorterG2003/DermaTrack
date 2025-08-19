@@ -1,12 +1,12 @@
-import { Platform } from 'react-native'
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ThemeProvider as RestyleThemeProvider } from "@shopify/restyle";
 import { ConvexReactClient } from "convex/react";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { ThemeProvider as RestyleThemeProvider } from "@shopify/restyle";
-import { ThemeProvider, useThemeContext } from "../theme";
+import { Platform } from 'react-native';
 import { LoadingScreen } from "../components";
 import { useAppLoading } from "../hooks/useAppLoading";
+import { ThemeProvider, useThemeContext } from "../theme";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,

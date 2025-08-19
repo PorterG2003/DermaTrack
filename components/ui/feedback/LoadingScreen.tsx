@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withRepeat, 
-  withTiming, 
-  withSequence,
-  interpolate,
-  Easing 
-} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useThemeContext } from '../../theme/ThemeContext';
+import React, { useEffect } from 'react';
+import { Text } from 'react-native';
+import Animated, {
+    Easing,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withRepeat,
+    withSequence,
+    withTiming
+} from 'react-native-reanimated';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 interface LoadingScreenProps {
   message?: string;

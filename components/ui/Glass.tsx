@@ -1,10 +1,10 @@
-import React from 'react';
+import { createBox, createText } from '@shopify/restyle';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useThemeContext } from '../../theme/ThemeContext';
+import React from 'react';
 import { ViewStyle } from 'react-native';
-import { createBox, createText } from '@shopify/restyle';
 import { darkThemeExport } from '../../theme/theme';
+import { useThemeContext } from '../../theme/ThemeContext';
 
 const Box = createBox<typeof darkThemeExport>();
 const Text = createText<typeof darkThemeExport>();

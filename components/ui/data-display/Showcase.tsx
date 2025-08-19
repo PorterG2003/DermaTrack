@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { 
-  Container, 
-  Button, 
-  Input, 
-  Spacer, 
-  Divider, 
-  Text,
-  Box
-} from './index';
+import {
+    Button,
+    Container,
+    Divider,
+    Input,
+    Spacer,
+    Text
+} from '../index';
 
 export function Showcase() {
   const [inputValue, setInputValue] = useState('');

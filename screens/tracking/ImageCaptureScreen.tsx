@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { View, TouchableOpacity, Alert, Dimensions, Image } from 'react-native';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { Text, FaceSilhouette } from '../../components';
-import { useThemeContext } from '../../theme/ThemeContext';
-import { OnboardingButton } from '../../components/onboarding';
 import { useMutation } from 'convex/react';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useRef, useState } from 'react';
+import { Alert, Dimensions, Image, TouchableOpacity, View } from 'react-native';
+import { FaceSilhouette, Text } from '../../components';
+import { OnboardingButton } from '../../components/onboarding';
 import { api } from '../../convex/_generated/api';
+import { useThemeContext } from '../../theme/ThemeContext';
 
 interface ImageCaptureScreenProps {
   onPhotoTaken?: (photoUri: string) => void;

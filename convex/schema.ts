@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
+import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 const schema = defineSchema({
@@ -68,6 +68,73 @@ const schema = defineSchema({
     .index("by_userId", ["userId"])
     .index("by_sessionId", ["sessionId"])
     .index("by_userId_photoType", ["userId", "photoType"]),
+
+  // User check-ins
+  checkIns: defineTable({
+    userId: v.string(), // OAuth subject (string, not Convex ID)
+    createdAt: v.number(), // Timestamp of check-in
+    testId: v.optional(v.id("tests")), // Reference to current test (if any)
+    completed: v.boolean(), // Whether this check-in was completed
+    
+    // Photo references - store the actual photo IDs
+    leftPhotoId: v.optional(v.id("photos")), // Reference to left photo
+    centerPhotoId: v.optional(v.id("photos")), // Reference to center photo  
+    rightPhotoId: v.optional(v.id("photos")), // Reference to right photo
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_date", ["userId", "createdAt"])
+    .index("by_userId_completed", ["userId", "completed"]),
+
+  // User tests/experiments
+  tests: defineTable({
+    userId: v.string(), // OAuth subject (string, not Convex ID)
+    name: v.string(), // e.g., "New Product Test", "Routine Change Test"
+    description: v.optional(v.string()), // Optional description of the test
+    formStructure: v.object({
+      questions: v.array(v.object({
+        id: v.string(),
+        type: v.union(v.literal("rating"), v.literal("yesNo"), v.literal("text"), v.literal("scale")),
+        question: v.string(),
+        required: v.boolean(),
+        options: v.optional(v.array(v.string())), // For rating scales or multiple choice
+      })),
+    }),
+    startDate: v.number(), // Unix timestamp when test started
+    endDate: v.optional(v.number()), // Unix timestamp when test ended (optional)
+    isActive: v.boolean(), // Whether the test is currently running
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_active", ["userId", "isActive"])
+    .index("by_userId_date", ["userId", "startDate"]),
+
+  // Test templates for users to choose from
+  testTemplates: defineTable({
+    name: v.string(), // e.g., "New Product Test", "Routine Change Test"
+    description: v.string(), // Description of what this test tracks
+    category: v.union(
+      v.literal("product"), 
+      v.literal("routine"), 
+      v.literal("lifestyle"), 
+      v.literal("ingredient")
+    ),
+    formStructure: v.object({
+      questions: v.array(v.object({
+        id: v.string(),
+        type: v.union(v.literal("rating"), v.literal("yesNo"), v.literal("text"), v.literal("scale")),
+        question: v.string(),
+        required: v.boolean(),
+        options: v.optional(v.array(v.string())), // For rating scales or multiple choice
+      })),
+    }),
+    duration: v.number(), // Recommended test duration in days
+    isActive: v.boolean(), // Whether this template is available for selection
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_active", ["isActive"]),
 });
 
 export default schema;

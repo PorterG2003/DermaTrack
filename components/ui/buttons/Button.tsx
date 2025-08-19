@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, TouchableOpacityProps, ViewStyle, TextStyle } from 'react-native';
-import { useThemeContext } from '../../theme/ThemeContext';
-import { Text } from './Glass';
+import { TextStyle, TouchableOpacity, TouchableOpacityProps, ViewStyle } from 'react-native';
+import { useThemeContext } from '../../../theme/ThemeContext';
+import { Text } from '../Glass';
 
 type ButtonVariant = 'primary' | 'secondary' | 'glass' | 'outline';
 type ButtonSize = 'small' | 'medium' | 'large';

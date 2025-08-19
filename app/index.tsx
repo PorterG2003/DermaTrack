@@ -1,27 +1,29 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useThemeContext } from "../theme/ThemeContext";
-import { View, TouchableOpacity } from "react-native";
-import { AuthScreen } from "../screens";
-import { Authenticated, Unauthenticated, AuthLoading, useQuery } from "convex/react";
-import { Text, Box } from "../components";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
+import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { Box, TabBar, Text } from "../components";
 import { api } from "../convex/_generated/api";
+import { useProfile } from "../hooks/useProfile";
+import { AuthScreen } from "../screens";
+import { DashboardScreen } from "../screens/dashboard";
 import {
-  OnboardingFlow,
-  WelcomeStep,
-  GenderStep,
+  CompleteStep,
   DateOfBirthStep,
-  SkinTypeStep,
-  PrimaryConcernsStep,
-  PhotoPermissionsStep,
-  NotificationsStep,
+  GenderStep,
   GoalsStep,
-  CompleteStep
+  NotificationsStep,
+  OnboardingFlow,
+  PhotoPermissionsStep,
+  PrimaryConcernsStep,
+  SkinTypeStep,
+  WelcomeStep
 } from "../screens/onboarding";
 import { ImageCaptureScreen, PhotoWalkthroughScreen } from "../screens/tracking";
-import { useProfile } from "../hooks/useProfile";
-import { useState } from "react";
+import { useThemeContext } from "../theme/ThemeContext";
 
 export default function Index() {
   const { theme } = useThemeContext();
@@ -29,6 +31,7 @@ export default function Index() {
   const { isOnboardingComplete, isLoading: onboardingLoading, markOnboardingComplete, resetOnboarding } = useProfile();
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   // Get user profile to access userId
   const userProfile = useQuery(api.userProfiles.getProfile);
@@ -74,6 +77,131 @@ export default function Index() {
 
   const handleBackFromWalkthrough = () => {
     setShowWalkthrough(false);
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <DashboardScreen />;
+      case 'tracking':
+        if (showWalkthrough) {
+          return (
+            <PhotoWalkthroughScreen
+              onStart={handleStartPhotoCapture}
+              onBack={handleBackFromWalkthrough}
+            />
+          );
+        }
+        if (showPhotoCapture) {
+          return (
+            <ImageCaptureScreen
+              onPhotoTaken={handlePhotoTaken}
+              onBack={handleBackFromPhoto}
+              userId={userProfile?.userId}
+            />
+          );
+        }
+        return (
+          <Box flex={1} justifyContent="center" alignItems="center" padding="l">
+            <Text variant="title" color="textPrimary" textAlign="center">
+              📸 Photo Tracking
+            </Text>
+            <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
+              Track your skin progress with photos
+            </Text>
+
+            <Box
+              backgroundColor="backgroundMuted"
+              padding="l"
+              borderRadius="m"
+              borderWidth={1}
+              borderColor="glassBorder"
+              marginTop="xl"
+              alignItems="center"
+            >
+              <Text variant="subtitle" color="textPrimary" marginBottom="s">
+                Ready to take progress photos?
+              </Text>
+              <Text variant="subtitle" color="textSecondary" textAlign="center" marginBottom="l">
+                Follow the walkthrough to capture consistent photos for tracking
+              </Text>
+              
+              <Box
+                backgroundColor="primary"
+                paddingHorizontal="l"
+                paddingVertical="m"
+                borderRadius="m"
+                onTouchEnd={() => setShowWalkthrough(true)}
+              >
+                <Text variant="subtitle" color="white">
+                  Start Photo Walkthrough
+                </Text>
+              </Box>
+            </Box>
+          </Box>
+        );
+      case 'profile':
+        return (
+          <Box flex={1} padding="l">
+            <Box marginBottom="xl">
+              <Text variant="title" color="textPrimary">
+                Profile
+              </Text>
+              <Text variant="subtitle" color="textSecondary" marginTop="xs">
+                Manage your account and settings
+              </Text>
+            </Box>
+
+            <Box 
+              backgroundColor="backgroundMuted" 
+              padding="l" 
+              borderRadius="m"
+              borderWidth={1}
+              borderColor="glassBorder"
+              marginBottom="m"
+            >
+              <Text variant="subtitle" color="textPrimary" marginBottom="s">
+                Account Settings
+              </Text>
+              <Text variant="subtitle" color="textSecondary" marginBottom="l">
+                Coming soon: Profile customization and preferences
+              </Text>
+            </Box>
+
+            <Box 
+              backgroundColor="backgroundMuted" 
+              padding="l" 
+              borderRadius="m"
+              borderWidth={1}
+              borderColor="glassBorder"
+              marginBottom="m"
+            >
+              <Text variant="subtitle" color="textPrimary" marginBottom="s">
+                Data & Privacy
+              </Text>
+              <Text variant="subtitle" color="textSecondary" marginBottom="l">
+                Coming soon: Data export and privacy controls
+              </Text>
+            </Box>
+
+            <TouchableOpacity
+              onPress={handleSignOut}
+              style={{
+                backgroundColor: '#ff6b6b',
+                paddingHorizontal: 24,
+                paddingVertical: 12,
+                borderRadius: 24,
+                alignSelf: 'center',
+                marginTop: 32,
+              }}
+            >
+              <Text variant="subtitle" color="white">Sign Out</Text>
+            </TouchableOpacity>
+          </Box>
+      );
+      default:
+        return <DashboardScreen />;
+    }
   };
 
   console.log('🔍 Step components check:');
@@ -137,59 +265,10 @@ export default function Index() {
                   userId={userProfile?.userId}
                 />
               ) : (
-                <Box flex={1} justifyContent="center" alignItems="center" padding="l">
-                  <Text variant="title" color="textPrimary" textAlign="center">
-                    Welcome to DermaTrack! 🎉
-                  </Text>
-                  <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
-                    You are successfully signed in with Google
-                  </Text>
-
-                  <TouchableOpacity
-                    onPress={() => setShowWalkthrough(true)}
-                    style={{
-                      marginTop: 24,
-                      backgroundColor: theme.colors.primary,
-                      paddingHorizontal: 24,
-                      paddingVertical: 12,
-                      borderRadius: 24,
-                      borderWidth: 1,
-                      borderColor: theme.colors.primary,
-                    }}
-                  >
-                    <Text variant="subtitle" color="white">Take Progress Photos</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={handleResetOnboarding}
-                    style={{
-                      marginTop: 16,
-                      backgroundColor: theme.colors.backgroundMuted,
-                      paddingHorizontal: 24,
-                      paddingVertical: 12,
-                      borderRadius: 24,
-                      borderWidth: 1,
-                      borderColor: theme.colors.glassBorder,
-                    }}
-                  >
-                    <Text variant="subtitle" color="textPrimary">Reset Onboarding (Testing)</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={handleSignOut}
-                    style={{
-                      marginTop: 16,
-                      backgroundColor: theme.colors.backgroundMuted,
-                      paddingHorizontal: 24,
-                      paddingVertical: 12,
-                      borderRadius: 24,
-                      borderWidth: 1,
-                      borderColor: theme.colors.glassBorder,
-                    }}
-                  >
-                    <Text variant="subtitle" color="textPrimary">Sign Out</Text>
-                  </TouchableOpacity>
-                </Box>
+                <View style={{ flex: 1 }}>
+                  {renderTabContent()}
+                  <TabBar activeTab={activeTab} onTabPress={setActiveTab} />
+                </View>
               )
             ) : (
               <OnboardingFlow 

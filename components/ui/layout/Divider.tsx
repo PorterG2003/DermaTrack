@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ViewStyle } from 'react-native';
-import { useThemeContext } from '../../theme/ThemeContext';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 type DividerVariant = 'solid' | 'dashed' | 'glass';
 type DividerSize = 'thin' | 'normal' | 'thick';

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Alert, ScrollView, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
-import { useThemeContext } from '../../../theme/ThemeContext';
 import { Profile } from '../../../hooks/useProfile';
-import * as ImagePicker from 'expo-image-picker';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 interface PhotoPermissionsStepProps {
   step: any;

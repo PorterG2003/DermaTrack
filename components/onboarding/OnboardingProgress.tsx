@@ -1,7 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Box, Text } from '../ui';
 import { useThemeContext } from '../../theme/ThemeContext';
+import { Box, Text } from '../ui';
 
 interface OnboardingProgressProps {
   currentStep: number;

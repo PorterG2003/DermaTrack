@@ -1,6 +1,6 @@
 import React from 'react';
-import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
-import { useThemeContext } from '../../theme/ThemeContext';
+import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 interface FaceSilhouetteProps {
   angle?: 'left' | 'center' | 'right';

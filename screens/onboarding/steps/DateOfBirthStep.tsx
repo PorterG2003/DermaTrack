@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { Input } from '../../../components/ui';
-import { useThemeContext } from '../../../theme/ThemeContext';
 import { Profile } from '../../../hooks/useProfile';
+import { useThemeContext } from '../../../theme/ThemeContext';
 
 interface DateOfBirthStepProps {
   step: any;

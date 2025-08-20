@@ -91,6 +91,8 @@ const darkTheme = createTheme({
     categoryRoutine: '#4ECDC4',      // Teal for routine tests
     categoryLifestyle: '#45B7D1',    // Blue for lifestyle tests
     categoryIngredient: '#96CEB4',   // Mint green for ingredient tests
+    // Special colors
+    fireOrange: '#FF6A00',           // Fire orange for streak icons
     // Content
     textPrimary: 'rgba(255,255,255,0.94)',
     textSecondary: 'rgba(255,255,255,0.68)',
@@ -120,6 +122,8 @@ const lightTheme = createTheme({
     categoryRoutine: '#009688',      // Teal for routine tests
     categoryLifestyle: '#2196F3',    // Blue for lifestyle tests
     categoryIngredient: '#4CAF50',   // Green for ingredient tests
+    // Special colors
+    fireOrange: '#FF6A00',           // Fire orange for streak icons
     // Content
     textPrimary: 'rgba(0,0,0,0.94)',
     textSecondary: 'rgba(0,0,0,0.68)',

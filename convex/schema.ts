@@ -101,6 +101,7 @@ const schema = defineSchema({
     }),
     startDate: v.number(), // Unix timestamp when test started
     endDate: v.optional(v.number()), // Unix timestamp when test ended (optional)
+    duration: v.number(), // Test duration in days (copied from template)
     isActive: v.boolean(), // Whether the test is currently running
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -138,7 +139,7 @@ const schema = defineSchema({
 
   // Test check-in answers - stores responses to test questions for each check-in
   testCheckins: defineTable({
-    checkInId: v.id("checkIns"), // Reference to the check-in
+    checkInId: v.optional(v.id("checkIns")), // Reference to the check-in (optional for standalone test questions)
     testId: v.id("tests"), // Reference to the test
     userId: v.string(), // OAuth subject (string, not Convex ID) - denormalized for easier querying
     answers: v.array(v.object({

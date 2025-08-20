@@ -7,6 +7,7 @@ export const createTest = mutation({
     userId: v.string(),
     name: v.string(),
     description: v.optional(v.string()),
+    duration: v.number(), // Test duration in days
     formStructure: v.object({
       questions: v.array(v.object({
         id: v.string(),
@@ -28,6 +29,7 @@ export const createTest = mutation({
       userId: args.userId,
       name: args.name,
       description: args.description,
+      duration: args.duration,
       formStructure: args.formStructure,
       startDate: Date.now(),
       endDate: undefined,
@@ -155,6 +157,7 @@ export const createTestFromTemplate = mutation({
       formStructure: template.formStructure, // Copy the form structure
       startDate: Date.now(),
       endDate: undefined,
+      duration: template.duration, // Copy the duration from template
       isActive: true,
       createdAt: Date.now(),
       updatedAt: Date.now(),

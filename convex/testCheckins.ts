@@ -6,7 +6,7 @@ import { mutation, query } from "./_generated/server";
 // Create a new test check-in with answers
 export const createTestCheckin = mutation({
   args: {
-    checkInId: v.id("checkIns"),
+    checkInId: v.optional(v.id("checkIns")), // Optional for standalone test questions
     testId: v.id("tests"),
     userId: v.string(),
     answers: v.array(v.object({
@@ -34,7 +34,7 @@ export const createTestCheckin = mutation({
     const allRequiredAnswered = requiredQuestions.every(q => answeredQuestionIds.has(q.id));
 
     const testCheckinId = await ctx.db.insert("testCheckins", {
-      checkInId: args.checkInId,
+      checkInId: args.checkInId, // This can be undefined for standalone test questions
       testId: args.testId,
       userId: args.userId,
       answers: args.answers.map(answer => ({

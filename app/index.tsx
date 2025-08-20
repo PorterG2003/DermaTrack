@@ -46,8 +46,8 @@ export default function Index() {
     userProfile?.userId ? { userId: userProfile.userId } : "skip"
   );
 
-  // Mutation to create check-in with test answers
-  const createCheckInWithTestAnswers = useMutation(api.checkIns.createCheckInWithTestAnswers);
+  // Mutation to create test check-in (without creating a regular check-in)
+  const createTestCheckin = useMutation(api.testCheckins.createTestCheckin);
 
   const handleSignOut = async () => {
     try {
@@ -122,20 +122,20 @@ export default function Index() {
     }
 
     try {
-      // Create the check-in with test answers
-      const result = await createCheckInWithTestAnswers({
-        userId: userProfile.userId,
+      // Create the test check-in directly (without creating a regular check-in)
+      const result = await createTestCheckin({
         testId: activeTest._id,
-        testAnswers: answers,
+        userId: userProfile.userId,
+        answers: answers,
       });
       
-      console.log('Check-in created successfully:', result);
+      console.log('Test check-in created successfully:', result);
       setShowTestCheckIn(false);
       
       // The dashboard will automatically refresh due to Convex's reactivity
       // and show "Today's Check-in Completed" instead of the button
     } catch (error) {
-      console.error('Failed to create check-in:', error);
+      console.error('Failed to create test check-in:', error);
       // TODO: Show error message to user
       setShowTestCheckIn(false);
     }

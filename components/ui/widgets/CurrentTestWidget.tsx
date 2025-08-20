@@ -27,15 +27,15 @@ export default function CurrentTestWidget({
     return (
       <Box 
         backgroundColor="backgroundMuted" 
-        padding="l" 
+        padding="xl" 
         borderRadius="m"
         borderWidth={1}
         borderColor="glassBorder"
       >
-        <Text variant="subtitle" color="textPrimary" marginBottom="s">
+        <Text variant="subtitle" color="textPrimary" marginBottom="m">
           🧪 Current Test
         </Text>
-        <Text variant="subtitle" color="textSecondary" marginBottom="l">
+        <Text variant="subtitle" color="textSecondary" marginBottom="xl">
           No active test running
         </Text>
         
@@ -59,20 +59,20 @@ export default function CurrentTestWidget({
   return (
     <Box 
       backgroundColor="backgroundMuted" 
-      padding="l" 
+      padding="xl" 
       borderRadius="m"
       borderWidth={1}
       borderColor="glassBorder"
     >
-      <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start" marginBottom="m">
+      <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start" marginBottom="l">
         <Box flex={1}>
-          <Text variant="subtitle" color="textPrimary" marginBottom="s">
+          <Text variant="subtitle" color="textPrimary" marginBottom="m">
             🧪 Current Test
           </Text>
-          <Text variant="title" color="textPrimary" marginBottom="xs">
+          <Text variant="title" color="textPrimary" marginBottom="s">
             {testName}
           </Text>
-          <Text variant="subtitle" color="textSecondary" marginBottom="s">
+          <Text variant="subtitle" color="textSecondary" marginBottom="m">
             {testDescription}
           </Text>
         </Box>
@@ -96,7 +96,7 @@ export default function CurrentTestWidget({
           paddingVertical="s" 
           borderRadius="m"
           alignSelf="flex-start"
-          marginBottom="m"
+          marginBottom="l"
         >
           <Text variant="caption" color="white" fontWeight="600">
             {daysRemaining} days remaining

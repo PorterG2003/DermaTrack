@@ -1,7 +1,7 @@
 import { useQuery } from 'convex/react';
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { Box, CheckInWidget, CurrentTestWidget, Text } from '../../components';
+import { Box, CurrentTestWidget, StreakWidget, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
 import { useProfile, useUserPhotos } from '../../hooks/useProfile';
 
@@ -19,7 +19,7 @@ export default function DashboardScreen() {
     userId ? { userId, limit: 7 } : "skip"
   );
 
-  // Calculate completed days for the streak
+  // Calculate streak count from recent check-ins
   const completedDays = recentCheckIns ? recentCheckIns.length : 0;
 
   // Calculate days remaining for active test (default to 14 days if no duration)
@@ -42,39 +42,57 @@ export default function DashboardScreen() {
     console.log('View test details');
   };
 
+  const handleCheckIn = () => {
+    // TODO: Handle daily check-in
+    console.log('Daily check-in completed');
+  };
+
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
-      <Box marginBottom="l">
-        <Text variant="title" color="textPrimary">
+    <ScrollView 
+      style={{ flex: 1 }} 
+      contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header Section */}
+      <Box marginBottom="xl">
+        <Text variant="title" color="textPrimary" marginBottom="xs">
           Dashboard
         </Text>
-        <Text variant="subtitle" color="textSecondary" marginTop="xs">
+        <Text variant="subtitle" color="textSecondary">
           Track your skin health journey
         </Text>
       </Box>
 
-      {/* 7-Day Check-in Widget */}
-      <CheckInWidget completedDays={completedDays} />
+      {/* Streak Widget */}
+      <Box marginBottom="xl">
+        <StreakWidget 
+          streakCount={completedDays}
+          onCheckIn={handleCheckIn}
+          isTodayCompleted={completedDays >= 7}
+        />
+      </Box>
 
       {/* Current Test Widget */}
-      <CurrentTestWidget
-        testName={activeTest?.name}
-        testDescription={activeTest?.description}
-        daysRemaining={getDaysRemaining()}
-        onStartTest={handleStartTest}
-        onViewTest={handleViewTest}
-      />
+      <Box marginBottom="xl">
+        <CurrentTestWidget
+          testName={activeTest?.name}
+          testDescription={activeTest?.description}
+          daysRemaining={getDaysRemaining()}
+          onStartTest={handleStartTest}
+          onViewTest={handleViewTest}
+        />
+      </Box>
 
       {/* Today's Check-in Widget */}
       <Box 
         backgroundColor="backgroundMuted" 
-        padding="l" 
+        padding="xl" 
         borderRadius="m"
         borderWidth={1}
         borderColor="glassBorder"
-        marginBottom="m"
+        marginBottom="l"
       >
-        <Text variant="subtitle" color="textPrimary" marginBottom="s">
+        <Text variant="subtitle" color="textPrimary" marginBottom="m">
           ✅ Today's Check-in
         </Text>
         <Text variant="subtitle" color="textSecondary">

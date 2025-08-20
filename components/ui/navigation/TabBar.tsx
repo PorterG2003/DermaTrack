@@ -19,7 +19,7 @@ export default function TabBar({ activeTab, onTabPress }: TabBarProps) {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.glassBackground, borderTopColor: theme.colors.glassBorder }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.backgroundMuted, borderTopColor: theme.colors.glassBorder }]}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.name}

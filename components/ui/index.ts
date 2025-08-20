@@ -10,6 +10,7 @@ export { default as TabBar } from './navigation/TabBar';
 
 export { default as CheckInWidget } from './widgets/CheckInWidget';
 export { default as CurrentTestWidget } from './widgets/CurrentTestWidget';
+export { default as StreakWidget } from './widgets/StreakWidget';
 
 export { FaceSilhouette } from './data-display/FaceSilhouette';
 export { Showcase } from './data-display/Showcase';

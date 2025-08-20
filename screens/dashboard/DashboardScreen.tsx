@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import { Box, CurrentTestWidget, StreakWidget, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
@@ -9,9 +8,10 @@ import { useThemeContext } from '../../theme/ThemeContext';
 
 interface DashboardScreenProps {
   onStartTest?: () => void;
+  onStartTestCheckIn?: () => void;
 }
 
-export default function DashboardScreen({ onStartTest }: DashboardScreenProps) {
+export default function DashboardScreen({ onStartTest, onStartTestCheckIn }: DashboardScreenProps) {
   const { theme } = useThemeContext();
   const { profile } = useProfile();
   const { userId } = useUserPhotos();
@@ -43,15 +43,42 @@ export default function DashboardScreen({ onStartTest }: DashboardScreenProps) {
     onStartTest?.();
   };
 
-  const handleViewTest = () => {
-    // TODO: Navigate to test details screen
-    console.log('View test details');
+  const handleCompleteCheckIn = () => {
+    // Navigate to check-in flow with test questions
+    onStartTestCheckIn?.();
   };
 
   const handleCheckIn = () => {
     // TODO: Handle daily check-in
     console.log('Daily check-in completed');
   };
+
+  // Check if today's check-in is completed
+  const isTodayCompleted = useMemo(() => {
+    if (!recentCheckIns || recentCheckIns.length === 0) {
+      console.log('No recent check-ins found');
+      return false;
+    }
+    
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000 - 1); // End of today
+    
+    console.log('Checking for check-ins between:', todayStart.toISOString(), 'and', todayEnd.toISOString());
+    console.log('Recent check-ins:', recentCheckIns.map(c => ({
+      id: c._id,
+      createdAt: new Date(c.createdAt).toISOString(),
+      userId: c.userId
+    })));
+    
+    const hasTodayCheckIn = recentCheckIns.some(checkIn => {
+      const checkInTime = checkIn.createdAt;
+      return checkInTime >= todayStart.getTime() && checkInTime <= todayEnd.getTime();
+    });
+    
+    console.log('Has today check-in:', hasTodayCheckIn);
+    return hasTodayCheckIn;
+  }, [recentCheckIns]);
 
   return (
     <ScrollView 
@@ -84,29 +111,10 @@ export default function DashboardScreen({ onStartTest }: DashboardScreenProps) {
           testName={activeTest?.name}
           testDescription={activeTest?.description}
           daysRemaining={getDaysRemaining()}
+          isTodayCompleted={isTodayCompleted}
           onStartTest={handleStartTest}
-          onViewTest={handleViewTest}
+          onCompleteCheckIn={handleCompleteCheckIn}
         />
-      </Box>
-
-      {/* Today's Check-in Widget */}
-      <Box 
-        backgroundColor="backgroundMuted" 
-        padding="xl" 
-        borderRadius="m"
-        borderWidth={1}
-        borderColor="glassBorder"
-        marginBottom="l"
-      >
-        <Box flexDirection="row" alignItems="center" marginBottom="m">
-          <Ionicons name="checkmark-circle" size={16} color={theme.colors.textPrimary} style={{ marginRight: 6 }} />
-          <Text variant="subtitle" color="textPrimary">
-            Today's Check-in
-          </Text>
-        </Box>
-        <Text variant="subtitle" color="textSecondary">
-          Coming soon: Complete your daily skin tracking
-        </Text>
       </Box>
     </ScrollView>
   );

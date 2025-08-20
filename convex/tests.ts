@@ -180,8 +180,8 @@ export const setupTestTemplates = mutation({
         formStructure: {
           questions: [
             { id: "appliedAsPlanned", type: "yesNo" as const, question: "Applied retinoid tonight as planned?", required: true },
-            { id: "irritation", type: "rating" as const, question: "Irritation today (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
-            { id: "acneSeverity", type: "rating" as const, question: "Acne severity today (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "irritation", type: "rating" as const, question: "Irritation today?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
+            { id: "acneSeverity", type: "rating" as const, question: "Acne severity today?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
           ],
         },
         duration: 28,
@@ -193,13 +193,13 @@ export const setupTestTemplates = mutation({
       // 2) BPO Strength Step-Up (2.5% → 5%)
       {
         name: "BPO Strength Step-Up (2.5% → 5%)",
-        description: "Use a higher BPO strength. Don’t change anything else.",
+        description: "Use a higher BPO strength. Don't change anything else.",
         category: "ingredient" as const,
         formStructure: {
           questions: [
             { id: "usedAsPlanned", type: "yesNo" as const, question: "Used the higher strength today?", required: true },
-            { id: "irritation", type: "rating" as const, question: "Irritation today (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
-            { id: "acneSeverity", type: "rating" as const, question: "Acne severity (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "irritation", type: "rating" as const, question: "Irritation today?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
+            { id: "acneSeverity", type: "rating" as const, question: "Acne severity?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
           ],
         },
         duration: 21,
@@ -217,7 +217,7 @@ export const setupTestTemplates = mutation({
           questions: [
             { id: "pausedAsPlanned", type: "yesNo" as const, question: "Avoided acids today?", required: true },
             { id: "stingingToday", type: "yesNo" as const, question: "Stinging/redness today?", required: true },
-            { id: "acneSeverity", type: "rating" as const, question: "Acne severity (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "acneSeverity", type: "rating" as const, question: "Acne severity?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
           ],
         },
         duration: 14,
@@ -253,7 +253,7 @@ export const setupTestTemplates = mutation({
           questions: [
             { id: "appliedAsPlanned", type: "yesNo" as const, question: "Added occlusive tonight?", required: true },
             { id: "morningDryness", type: "scale" as const, question: "Morning dryness", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
-            { id: "comfort", type: "rating" as const, question: "Skin comfort (0–10)?", required: false, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "comfort", type: "rating" as const, question: "Skin comfort today?", required: false, options: ["Poor", "Fair", "Good", "Very Good", "Excellent"] },
           ],
         },
         duration: 14,
@@ -288,7 +288,7 @@ export const setupTestTemplates = mutation({
         formStructure: {
           questions: [
             { id: "keptLowGI", type: "yesNo" as const, question: "Kept meals lower-GI today?", required: true },
-            { id: "acneSeverity", type: "rating" as const, question: "Acne severity (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "acneSeverity", type: "rating" as const, question: "Acne severity?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
             { id: "newBreakouts", type: "yesNo" as const, question: "New breakouts since yesterday?", required: true },
           ],
         },
@@ -306,7 +306,7 @@ export const setupTestTemplates = mutation({
         formStructure: {
           questions: [
             { id: "avoidedDairy", type: "yesNo" as const, question: "Avoided dairy today?", required: true },
-            { id: "acneSeverity", type: "rating" as const, question: "Acne severity (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "acneSeverity", type: "rating" as const, question: "Acne severity?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
             { id: "newBreakouts", type: "yesNo" as const, question: "New breakouts today?", required: true },
           ],
         },
@@ -325,7 +325,7 @@ export const setupTestTemplates = mutation({
           questions: [
             { id: "stuckToPlan", type: "yesNo" as const, question: "Used fragrance-free leave-ons only?", required: true },
             { id: "rednessToday", type: "yesNo" as const, question: "Redness/itching today?", required: true },
-            { id: "comfort", type: "rating" as const, question: "Skin comfort (0–10)?", required: false, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "comfort", type: "rating" as const, question: "Skin comfort today?", required: false, options: ["Poor", "Fair", "Good", "Very Good", "Excellent"] },
           ],
         },
         duration: 14,
@@ -343,7 +343,7 @@ export const setupTestTemplates = mutation({
           questions: [
             { id: "cleansedAfterWorkout", type: "yesNo" as const, question: "Cleansed right after workouts today?", required: true },
             { id: "newBreakouts", type: "yesNo" as const, question: "New breakouts (face/chest/back)?", required: true },
-            { id: "acneSeverity", type: "rating" as const, question: "Acne severity (0–10)?", required: true, options: ["0","1","2","3","4","5","6","7","8","9","10"] },
+            { id: "acneSeverity", type: "rating" as const, question: "Acne severity?", required: true, options: ["None", "Mild", "Moderate", "Severe"] },
           ],
         },
         duration: 21,

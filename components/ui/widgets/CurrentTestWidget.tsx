@@ -8,16 +8,18 @@ interface CurrentTestWidgetProps {
   testName?: string;
   testDescription?: string;
   daysRemaining?: number;
+  isTodayCompleted?: boolean;
   onStartTest?: () => void;
-  onViewTest?: () => void;
+  onCompleteCheckIn?: () => void;
 }
 
 export default function CurrentTestWidget({ 
   testName, 
   testDescription, 
   daysRemaining, 
+  isTodayCompleted = false,
   onStartTest, 
-  onViewTest 
+  onCompleteCheckIn 
 }: CurrentTestWidgetProps) {
   const { theme } = useThemeContext();
 
@@ -62,69 +64,84 @@ export default function CurrentTestWidget({
   return (
     <Box 
       backgroundColor="backgroundMuted" 
-      padding="xl" 
+      padding="xl"
       borderRadius="m"
       borderWidth={1}
       borderColor="glassBorder"
     >
-      <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start" marginBottom="l">
-        <Box flex={1}>
-          <Box flexDirection="row" alignItems="center" marginBottom="m">
-            <Ionicons name="flask" size={16} color={theme.colors.textPrimary} style={{ marginRight: 6 }} />
-            <Text variant="subtitle" color="textPrimary">
-              Current Test
-            </Text>
-          </Box>
-          <Text variant="title" color="textPrimary" marginBottom="s">
-            {testName}
-          </Text>
-          <Text variant="subtitle" color="textSecondary" marginBottom="m">
-            {testDescription}
+      {/* Header with icon and days remaining */}
+      <Box flexDirection="row" justifyContent="space-between" alignItems="center" marginBottom="l">
+        <Box flexDirection="row" alignItems="center">
+          <Ionicons name="flask" size={16} color={theme.colors.textPrimary} style={{ marginRight: 6 }} />
+          <Text variant="subtitle" color="textPrimary">
+            Current Test
           </Text>
         </Box>
         
-        <TouchableOpacity onPress={onViewTest}>
-          <Box
-            backgroundColor="primary"
-            paddingHorizontal="m"
-            paddingVertical="s"
-            borderRadius="m"
+        {daysRemaining !== undefined && (
+          <Box 
+            backgroundColor="backgroundMuted"
+            paddingHorizontal="s" 
+            paddingVertical="xs" 
+            borderRadius="s"
+            borderWidth={1}
+            borderColor="glassBorder"
           >
-            <Ionicons name="eye" size={16} color={theme.colors.white} />
+            <Text variant="caption" color="textSecondary" fontWeight="600">
+              {daysRemaining} days left
+            </Text>
           </Box>
-        </TouchableOpacity>
+        )}
       </Box>
 
-      {daysRemaining !== undefined && (
-        <Box 
-          backgroundColor="primary" 
-          paddingHorizontal="m" 
-          paddingVertical="s" 
-          borderRadius="m"
-          alignSelf="flex-start"
-          marginBottom="l"
-        >
-          <Text variant="caption" color="white" fontWeight="600">
-            {daysRemaining} days remaining
-          </Text>
-        </Box>
-      )}
+      {/* Test content */}
+      <Box marginBottom="xl">
+        <Text variant="title" color="textPrimary" marginBottom="s">
+          {testName}
+        </Text>
+        <Text variant="subtitle" color="textSecondary">
+          {testDescription}
+        </Text>
+      </Box>
 
-      <TouchableOpacity onPress={onViewTest}>
+      {/* Action button - only show if today's check-in is not completed */}
+      {!isTodayCompleted ? (
+        <TouchableOpacity onPress={onCompleteCheckIn}>
+          <Box
+            backgroundColor="primary"
+            paddingHorizontal="l"
+            paddingVertical="m"
+            borderRadius="m"
+            alignItems="center"
+          >
+            <Text 
+              variant="subtitle" 
+              color="white"
+            >
+              Complete Today's Check-in
+            </Text>
+          </Box>
+        </TouchableOpacity>
+      ) : (
+        /* Show completion status when check-in is done */
         <Box
-          backgroundColor="backgroundMuted"
+          backgroundColor="background"
           paddingHorizontal="l"
           paddingVertical="m"
           borderRadius="m"
+          alignItems="center"
           borderWidth={1}
           borderColor="glassBorder"
-          alignItems="center"
+          opacity={0.6}
         >
-          <Text variant="subtitle" color="textPrimary">
-            View Test Details
+          <Text 
+            variant="subtitle" 
+            color="textSecondary"
+          >
+            Today's Check-in Completed
           </Text>
         </Box>
-      </TouchableOpacity>
+      )}
     </Box>
   );
 }

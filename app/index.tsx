@@ -1,5 +1,5 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
+import { Authenticated, AuthLoading, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
@@ -22,6 +22,7 @@ import {
   SkinTypeStep,
   WelcomeStep
 } from "../screens/onboarding";
+import { TestQuestionsFlow } from "../screens/test-questions";
 import { TestSelectionScreen } from "../screens/test-selection";
 import { ImageCaptureScreen, PhotoWalkthroughScreen } from "../screens/tracking";
 import { useThemeContext } from "../theme/ThemeContext";
@@ -33,11 +34,20 @@ export default function Index() {
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showTestSelection, setShowTestSelection] = useState(false);
+  const [showTestCheckIn, setShowTestCheckIn] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const insets = useSafeAreaInsets();
 
   // Get user profile to access userId
   const userProfile = useQuery(api.userProfiles.getProfile);
+  
+  // Get the active test for the current user
+  const activeTest = useQuery(api.tests.getActiveTest, 
+    userProfile?.userId ? { userId: userProfile.userId } : "skip"
+  );
+
+  // Mutation to create check-in with test answers
+  const createCheckInWithTestAnswers = useMutation(api.checkIns.createCheckInWithTestAnswers);
 
   const handleSignOut = async () => {
     try {
@@ -96,6 +106,45 @@ export default function Index() {
     setShowTestSelection(false);
   };
 
+  const handleStartTestCheckIn = () => {
+    setShowTestCheckIn(true);
+  };
+
+  const handleTestCheckInComplete = async (answers: Array<{
+    questionId: string;
+    answer: string | number | boolean;
+    questionType: 'rating' | 'yesNo' | 'text' | 'scale';
+  }>) => {
+    if (!userProfile?.userId || !activeTest) {
+      console.error('Missing userId or activeTest for check-in creation');
+      setShowTestCheckIn(false);
+      return;
+    }
+
+    try {
+      // Create the check-in with test answers
+      const result = await createCheckInWithTestAnswers({
+        userId: userProfile.userId,
+        testId: activeTest._id,
+        testAnswers: answers,
+      });
+      
+      console.log('Check-in created successfully:', result);
+      setShowTestCheckIn(false);
+      
+      // The dashboard will automatically refresh due to Convex's reactivity
+      // and show "Today's Check-in Completed" instead of the button
+    } catch (error) {
+      console.error('Failed to create check-in:', error);
+      // TODO: Show error message to user
+      setShowTestCheckIn(false);
+    }
+  };
+
+  const handleBackFromTestCheckIn = () => {
+    setShowTestCheckIn(false);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -107,7 +156,29 @@ export default function Index() {
             />
           );
         }
-        return <DashboardScreen onStartTest={handleStartTest} />;
+        if (showTestCheckIn) {
+          if (activeTest) {
+            return (
+              <TestQuestionsFlow
+                test={activeTest}
+                onComplete={handleTestCheckInComplete}
+                onCancel={handleBackFromTestCheckIn}
+              />
+            );
+          }
+          // Show loading or error state if no active test
+          return (
+            <Box flex={1} justifyContent="center" alignItems="center" padding="l">
+              <Text variant="title" color="textPrimary" textAlign="center">
+                Loading Test...
+              </Text>
+              <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
+                Please wait while we load your test information
+              </Text>
+            </Box>
+          );
+        }
+        return <DashboardScreen onStartTest={handleStartTest} onStartTestCheckIn={handleStartTestCheckIn} />;
       case 'tracking':
         if (showWalkthrough) {
           return (

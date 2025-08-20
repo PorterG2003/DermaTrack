@@ -1,4 +1,5 @@
 export { Button } from './buttons/Button';
+export { GuideButton } from './buttons/GuideButton';
 export { Input } from './inputs/Input';
 
 export { Container } from './layout/Container';

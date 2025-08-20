@@ -135,6 +135,31 @@ const schema = defineSchema({
   })
     .index("by_category", ["category"])
     .index("by_active", ["isActive"]),
+
+  // Test check-in answers - stores responses to test questions for each check-in
+  testCheckins: defineTable({
+    checkInId: v.id("checkIns"), // Reference to the check-in
+    testId: v.id("tests"), // Reference to the test
+    userId: v.string(), // OAuth subject (string, not Convex ID) - denormalized for easier querying
+    answers: v.array(v.object({
+      questionId: v.string(), // Matches the question ID from the test form structure
+      answer: v.union(
+        v.string(), // For text, yesNo, and scale responses
+        v.number(), // For rating responses
+        v.boolean() // For yesNo responses (alternative to string)
+      ),
+      questionType: v.union(v.literal("rating"), v.literal("yesNo"), v.literal("text"), v.literal("scale")),
+      answeredAt: v.number(), // Timestamp when this answer was provided
+    })),
+    completed: v.boolean(), // Whether all required questions were answered
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_checkInId", ["checkInId"])
+    .index("by_testId", ["testId"])
+    .index("by_userId", ["userId"])
+    .index("by_userId_testId", ["userId", "testId"])
+    .index("by_userId_date", ["userId", "createdAt"]),
 });
 
 export default schema;

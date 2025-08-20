@@ -7,9 +7,10 @@ import { Text } from '../index';
 interface TabBarProps {
   activeTab: string;
   onTabPress: (tabName: string) => void;
+  style?: any;
 }
 
-export default function TabBar({ activeTab, onTabPress }: TabBarProps) {
+export default function TabBar({ activeTab, onTabPress, style }: TabBarProps) {
   const { theme } = useThemeContext();
 
   const tabs = [
@@ -19,7 +20,7 @@ export default function TabBar({ activeTab, onTabPress }: TabBarProps) {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.backgroundMuted, borderTopColor: theme.colors.glassBorder }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.backgroundMuted, borderTopColor: theme.colors.glassBorder }, style]}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.name}

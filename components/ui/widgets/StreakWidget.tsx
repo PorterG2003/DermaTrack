@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useThemeContext } from '../../../theme/ThemeContext';
@@ -30,14 +31,11 @@ export default function StreakWidget({
   // Fire emoji with dynamic sizing
   const renderFire = () => {
     return (
-      <Text 
-        variant="heading" 
-        color="primary" 
-        textAlign="center"
-        style={{ fontSize: fireSize }}
-      >
-        🔥
-      </Text>
+      <Ionicons 
+        name="flame" 
+        size={fireSize} 
+        color={theme.colors.primary} 
+      />
     );
   };
 

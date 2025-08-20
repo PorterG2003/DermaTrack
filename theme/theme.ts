@@ -86,6 +86,11 @@ const darkTheme = createTheme({
     primary: '#4CB3FF',
     primaryEmphasis: '#1A8CFF',
     secondary: '#78FFD6',
+    // Category colors
+    categoryProduct: '#FF6B9D',      // Pink for product tests
+    categoryRoutine: '#4ECDC4',      // Teal for routine tests
+    categoryLifestyle: '#45B7D1',    // Blue for lifestyle tests
+    categoryIngredient: '#96CEB4',   // Mint green for ingredient tests
     // Content
     textPrimary: 'rgba(255,255,255,0.94)',
     textSecondary: 'rgba(255,255,255,0.68)',
@@ -110,6 +115,11 @@ const lightTheme = createTheme({
     primary: '#0066CC',
     primaryEmphasis: '#004499',
     secondary: '#00AA88',
+    // Category colors
+    categoryProduct: '#E91E63',      // Pink for product tests
+    categoryRoutine: '#009688',      // Teal for routine tests
+    categoryLifestyle: '#2196F3',    // Blue for lifestyle tests
+    categoryIngredient: '#4CAF50',   // Green for ingredient tests
     // Content
     textPrimary: 'rgba(0,0,0,0.94)',
     textSecondary: 'rgba(0,0,0,0.68)',

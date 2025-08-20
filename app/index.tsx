@@ -3,7 +3,7 @@ import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/re
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Box, TabBar, Text } from "../components";
 import { api } from "../convex/_generated/api";
@@ -22,6 +22,7 @@ import {
   SkinTypeStep,
   WelcomeStep
 } from "../screens/onboarding";
+import { TestSelectionScreen } from "../screens/test-selection";
 import { ImageCaptureScreen, PhotoWalkthroughScreen } from "../screens/tracking";
 import { useThemeContext } from "../theme/ThemeContext";
 
@@ -31,7 +32,9 @@ export default function Index() {
   const { isOnboardingComplete, isLoading: onboardingLoading, markOnboardingComplete, resetOnboarding } = useProfile();
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showTestSelection, setShowTestSelection] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const insets = useSafeAreaInsets();
 
   // Get user profile to access userId
   const userProfile = useQuery(api.userProfiles.getProfile);
@@ -79,10 +82,32 @@ export default function Index() {
     setShowWalkthrough(false);
   };
 
+  const handleStartTest = () => {
+    setShowTestSelection(true);
+  };
+
+  const handleTestCreated = (testId: string) => {
+    setShowTestSelection(false);
+    // Test created successfully, user is back on dashboard
+    console.log('Test created with ID:', testId);
+  };
+
+  const handleBackFromTestSelection = () => {
+    setShowTestSelection(false);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardScreen />;
+        if (showTestSelection) {
+          return (
+            <TestSelectionScreen
+              onTestCreated={handleTestCreated}
+              onBack={handleBackFromTestSelection}
+            />
+          );
+        }
+        return <DashboardScreen onStartTest={handleStartTest} />;
       case 'tracking':
         if (showWalkthrough) {
           return (
@@ -236,7 +261,13 @@ export default function Index() {
         end={theme.gradients.background.end}
         style={{ flex: 1 }}
       >
-        <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ 
+          flex: 1, 
+          paddingTop: insets.top,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+          paddingBottom: 80
+        }}>
           <AuthLoading>
             <Box flex={1} justifyContent="center" alignItems="center">
               <Text variant="title" color="textPrimary">Loading...</Text>
@@ -254,30 +285,50 @@ export default function Index() {
               </Box>
             ) : isOnboardingComplete ? (
               showWalkthrough ? (
-                <PhotoWalkthroughScreen
-                  onStart={handleStartPhotoCapture}
-                  onBack={handleBackFromWalkthrough}
-                />
+                <View style={{ flex: 1 }}>
+                  <PhotoWalkthroughScreen
+                    onStart={handleStartPhotoCapture}
+                    onBack={handleBackFromWalkthrough}
+                  />
+                </View>
               ) : showPhotoCapture ? (
-                <ImageCaptureScreen
-                  onPhotoTaken={handlePhotoTaken}
-                  onBack={handleBackFromPhoto}
-                  userId={userProfile?.userId}
-                />
+                <View style={{ flex: 1 }}>
+                  <ImageCaptureScreen
+                    onPhotoTaken={handlePhotoTaken}
+                    onBack={handleBackFromPhoto}
+                    userId={userProfile?.userId}
+                  />
+                </View>
               ) : (
                 <View style={{ flex: 1 }}>
                   {renderTabContent()}
-                  <TabBar activeTab={activeTab} onTabPress={setActiveTab} />
                 </View>
               )
             ) : (
-              <OnboardingFlow 
-                steps={onboardingSteps} 
-                onComplete={handleOnboardingComplete} 
-              />
+              <View style={{ flex: 1 }}>
+                <OnboardingFlow 
+                  steps={onboardingSteps} 
+                  onComplete={handleOnboardingComplete} 
+                />
+              </View>
             )}
           </Authenticated>
-        </SafeAreaView>
+        </View>
+        
+        {/* Tab bar positioned absolutely at bottom, below safe area */}
+        {isOnboardingComplete && !showWalkthrough && !showPhotoCapture && (
+          <TabBar 
+            activeTab={activeTab} 
+            onTabPress={setActiveTab}
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              paddingBottom: insets.bottom
+            }}
+          />
+        )}
       </LinearGradient>
     </View>
   );

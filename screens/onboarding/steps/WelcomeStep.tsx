@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import { StepIcon, Text } from '../../../components';
+import { Box, StepIcon, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { useThemeContext } from '../../../theme/ThemeContext';
 
@@ -94,31 +95,43 @@ export function WelcomeStep({
             numberOfLines={2}
             adjustsFontSizeToFit
           >
-            ✨ What you'll be able to do:
+            What you'll be able to do:
           </Text>
           
           <View style={{ marginBottom: theme.spacing.s }}>
-            <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
-              📸 Track acne breakouts and progress
-            </Text>
+            <Box flexDirection="row" alignItems="center" justifyContent="center">
+              <Ionicons name="camera" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
+                Track acne breakouts and progress
+              </Text>
+            </Box>
           </View>
           
           <View style={{ marginBottom: theme.spacing.s }}>
-            <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
-              📊 Monitor treatment effectiveness
-            </Text>
+            <Box flexDirection="row" alignItems="center" justifyContent="center">
+              <Ionicons name="analytics" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
+                Monitor treatment effectiveness
+              </Text>
+            </Box>
           </View>
           
           <View style={{ marginBottom: theme.spacing.s }}>
-            <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
-              🔍 Identify acne triggers and patterns
-            </Text>
+            <Box flexDirection="row" alignItems="center" justifyContent="center">
+              <Ionicons name="search" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
+                Identify acne triggers and patterns
+              </Text>
+            </Box>
           </View>
           
           <View>
-            <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
-              📱 Build your clear skin routine
-            </Text>
+            <Box flexDirection="row" alignItems="center" justifyContent="center">
+              <Ionicons name="phone-portrait" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text variant="caption" color="textSecondary" textAlign="center" numberOfLines={1}>
+                Build your clear skin routine
+              </Text>
+            </Box>
           </View>
         </View>
         

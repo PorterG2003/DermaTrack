@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
-import { Text } from '../../../components';
+import { Box, Text } from '../../../components';
 import { OnboardingButton } from '../../../components/onboarding';
 import { Profile } from '../../../hooks/useProfile';
 import { useThemeContext } from '../../../theme/ThemeContext';
@@ -100,31 +101,43 @@ export function CompleteStep({
           textAlign="center"
           marginBottom="m"
         >
-          🚀 What's Next:
+          What's Next:
         </Text>
         
         <View style={{ marginBottom: theme.spacing.s }}>
-          <Text variant="caption" color="textSecondary" textAlign="center">
-            📸 Take your first acne photo to start tracking
-          </Text>
+          <Box flexDirection="row" alignItems="center" justifyContent="center">
+            <Ionicons name="camera" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+            <Text variant="caption" color="textSecondary" textAlign="center">
+              Take your first acne photo to start tracking
+            </Text>
+          </Box>
         </View>
         
         <View style={{ marginBottom: theme.spacing.s }}>
-          <Text variant="caption" color="textSecondary" textAlign="center">
-            📊 View your personalized acne dashboard
-          </Text>
+          <Box flexDirection="row" alignItems="center" justifyContent="center">
+            <Ionicons name="analytics" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+            <Text variant="caption" color="textSecondary" textAlign="center">
+              View your personalized acne dashboard
+            </Text>
+          </Box>
         </View>
         
         <View style={{ marginBottom: theme.spacing.s }}>
-          <Text variant="caption" color="textSecondary" textAlign="center">
-            🔔 Set up your first tracking reminder
-          </Text>
+          <Box flexDirection="row" alignItems="center" justifyContent="center">
+            <Ionicons name="notifications" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+            <Text variant="caption" color="textSecondary" textAlign="center">
+              Set up your first tracking reminder
+            </Text>
+          </Box>
         </View>
         
         <View>
-          <Text variant="caption" color="textSecondary" textAlign="center">
-            📱 Start building your clear skin routine
-          </Text>
+          <Box flexDirection="row" alignItems="center" justifyContent="center">
+            <Ionicons name="phone-portrait" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+            <Text variant="caption" color="textSecondary" textAlign="center">
+              Start building your clear skin routine
+            </Text>
+          </Box>
         </View>
       </View>
       
@@ -144,7 +157,7 @@ export function CompleteStep({
           color="textSecondary" 
           textAlign="center"
         >
-          💡 Tip: Take photos in consistent lighting to track your acne progress accurately.
+          Tip: Take photos in consistent lighting to track your acne progress accurately.
         </Text>
       </View>
       

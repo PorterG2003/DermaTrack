@@ -32,9 +32,12 @@ export default function CurrentTestWidget({
         borderWidth={1}
         borderColor="glassBorder"
       >
-        <Text variant="subtitle" color="textPrimary" marginBottom="m">
-          🧪 Current Test
-        </Text>
+        <Box flexDirection="row" alignItems="center" marginBottom="m">
+          <Ionicons name="flask" size={16} color={theme.colors.textPrimary} style={{ marginRight: 6 }} />
+          <Text variant="subtitle" color="textPrimary">
+            Current Test
+          </Text>
+        </Box>
         <Text variant="subtitle" color="textSecondary" marginBottom="xl">
           No active test running
         </Text>
@@ -66,9 +69,12 @@ export default function CurrentTestWidget({
     >
       <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start" marginBottom="l">
         <Box flex={1}>
-          <Text variant="subtitle" color="textPrimary" marginBottom="m">
-            🧪 Current Test
-          </Text>
+          <Box flexDirection="row" alignItems="center" marginBottom="m">
+            <Ionicons name="flask" size={16} color={theme.colors.textPrimary} style={{ marginRight: 6 }} />
+            <Text variant="subtitle" color="textPrimary">
+              Current Test
+            </Text>
+          </Box>
           <Text variant="title" color="textPrimary" marginBottom="s">
             {testName}
           </Text>

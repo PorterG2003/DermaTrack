@@ -1,11 +1,18 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import { Box, CurrentTestWidget, StreakWidget, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
 import { useProfile, useUserPhotos } from '../../hooks/useProfile';
+import { useThemeContext } from '../../theme/ThemeContext';
 
-export default function DashboardScreen() {
+interface DashboardScreenProps {
+  onStartTest?: () => void;
+}
+
+export default function DashboardScreen({ onStartTest }: DashboardScreenProps) {
+  const { theme } = useThemeContext();
   const { profile } = useProfile();
   const { userId } = useUserPhotos();
   
@@ -33,8 +40,7 @@ export default function DashboardScreen() {
   };
 
   const handleStartTest = () => {
-    // TODO: Navigate to test selection screen
-    console.log('Start new test');
+    onStartTest?.();
   };
 
   const handleViewTest = () => {
@@ -92,9 +98,12 @@ export default function DashboardScreen() {
         borderColor="glassBorder"
         marginBottom="l"
       >
-        <Text variant="subtitle" color="textPrimary" marginBottom="m">
-          ✅ Today's Check-in
-        </Text>
+        <Box flexDirection="row" alignItems="center" marginBottom="m">
+          <Ionicons name="checkmark-circle" size={16} color={theme.colors.textPrimary} style={{ marginRight: 6 }} />
+          <Text variant="subtitle" color="textPrimary">
+            Today's Check-in
+          </Text>
+        </Box>
         <Text variant="subtitle" color="textSecondary">
           Coming soon: Complete your daily skin tracking
         </Text>

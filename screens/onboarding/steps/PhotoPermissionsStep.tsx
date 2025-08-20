@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
@@ -46,7 +47,7 @@ export function PhotoPermissionsStep({
         // Save to onboarding data
         await updateProfile({ cameraPermission: true });
         Alert.alert(
-          'Permission Granted! 📸',
+          'Permission Granted!',
           'You can now take photos to track your skin health.',
           [{ text: 'Continue', onPress: onNext }]
         );
@@ -121,7 +122,7 @@ export function PhotoPermissionsStep({
           }}
         >
           <Text variant="title" color="primary" fontSize={64} height={140} lineHeight={140}>
-            📸
+            <Ionicons name="camera" size={24} color={theme.colors.primary} />
           </Text>
         </Box>
         
@@ -144,23 +145,32 @@ export function PhotoPermissionsStep({
             ✨ What you can do with camera access:
           </Text>
           
-          <Box marginBottom="s">
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              📱 Take photos of acne breakouts
-            </Text>
-          </Box>
+                      <Box marginBottom="s">
+              <Box flexDirection="row" alignItems="center" justifyContent="center">
+                <Ionicons name="phone-portrait" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+                <Text variant="caption" color="textSecondary" textAlign="center">
+                  Take photos of acne breakouts
+                </Text>
+              </Box>
+            </Box>
           
-          <Box marginBottom="s">
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              📊 Track acne improvement over time
-            </Text>
-          </Box>
+                      <Box marginBottom="s">
+              <Box flexDirection="row" alignItems="center" justifyContent="center">
+                <Ionicons name="analytics" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+                <Text variant="caption" color="textSecondary" textAlign="center">
+                  Track acne improvement over time
+                </Text>
+              </Box>
+            </Box>
           
-          <Box marginBottom="s">
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              🔍 Compare before and after results
-            </Text>
-          </Box>
+                      <Box marginBottom="s">
+              <Box flexDirection="row" alignItems="center" justifyContent="center">
+                <Ionicons name="search" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
+                <Text variant="caption" color="textSecondary" textAlign="center">
+                  Compare before and after results
+                </Text>
+              </Box>
+            </Box>
           
           <Box>
             <Text variant="caption" color="textSecondary" textAlign="center">

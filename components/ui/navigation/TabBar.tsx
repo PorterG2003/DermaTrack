@@ -15,7 +15,7 @@ export default function TabBar({ activeTab, onTabPress, style }: TabBarProps) {
 
   const tabs = [
     { name: 'dashboard', label: 'Dashboard', icon: 'home' },
-    { name: 'tracking', label: 'Tracking', icon: 'camera' },
+    { name: 'check-in', label: 'Check-in', icon: 'checkmark-circle' },
     { name: 'profile', label: 'Profile', icon: 'person' },
   ];
 

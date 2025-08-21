@@ -152,6 +152,7 @@ const schema = defineSchema({
       questionType: v.union(v.literal("rating"), v.literal("yesNo"), v.literal("text"), v.literal("scale")),
       answeredAt: v.number(), // Timestamp when this answer was provided
     })),
+    summary: v.optional(v.string()), // AI-generated summary of the check-in
     completed: v.boolean(), // Whether all required questions were answered
     createdAt: v.number(),
     updatedAt: v.number(),

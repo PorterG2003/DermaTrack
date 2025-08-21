@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { api } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 
 // Check-in mutations and queries
@@ -87,6 +88,18 @@ export const createCheckInWithTestAnswers = mutation({
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
+
+    // Generate AI summary asynchronously (don't wait for it to complete)
+    if (allRequiredAnswered) {
+      // Call the AI summarization function directly
+      // Note: This will block until completion, but provides immediate feedback
+      try {
+        await ctx.runMutation(api.aiSummarization.generateCheckInSummary, { testCheckinId });
+      } catch (error) {
+        console.error("Failed to generate AI summary:", error);
+        // Continue with check-in creation even if summary fails
+      }
+    }
     
     return {
       checkInId,
@@ -118,7 +131,7 @@ export const getRecentCheckIns = query({
   },
 });
 
-// Get check-ins with their associated test answers
+// Get check-ins with their associated test answers and test details
 export const getCheckInsWithTestAnswers = query({
   args: { userId: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
@@ -129,7 +142,7 @@ export const getCheckInsWithTestAnswers = query({
       .order("desc")
       .take(limit);
 
-    // For each check-in, fetch its associated test answers if it has a test
+    // For each check-in, fetch its associated test answers and test details if it has a test
     const checkInsWithAnswers = await Promise.all(
       checkIns.map(async (checkIn) => {
         if (checkIn.testId) {
@@ -138,14 +151,19 @@ export const getCheckInsWithTestAnswers = query({
             .withIndex("by_checkInId", (q) => q.eq("checkInId", checkIn._id))
             .first();
           
+          // Fetch the actual test details
+          const test = await ctx.db.get(checkIn.testId);
+          
           return {
             ...checkIn,
             testAnswers: testCheckin || null,
+            test: test || null,
           };
         }
         return {
           ...checkIn,
           testAnswers: null,
+          test: null,
         };
       })
     );

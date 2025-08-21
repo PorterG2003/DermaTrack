@@ -24,6 +24,8 @@ import {
 } from "../screens/onboarding";
 import { TestQuestionsFlow } from "../screens/test-questions";
 import { TestSelectionScreen } from "../screens/test-selection";
+
+import { CheckInHistoryScreen, CheckInHomeScreen } from "../screens/check-in";
 import { ImageCaptureScreen, PhotoWalkthroughScreen } from "../screens/tracking";
 import { useThemeContext } from "../theme/ThemeContext";
 
@@ -35,6 +37,7 @@ export default function Index() {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showTestSelection, setShowTestSelection] = useState(false);
   const [showTestCheckIn, setShowTestCheckIn] = useState(false);
+  const [showCheckInHistory, setShowCheckInHistory] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const insets = useSafeAreaInsets();
 
@@ -145,6 +148,14 @@ export default function Index() {
     setShowTestCheckIn(false);
   };
 
+  const handleViewAllCheckIns = () => {
+    setShowCheckInHistory(true);
+  };
+
+  const handleBackFromCheckInHistory = () => {
+    setShowCheckInHistory(false);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -179,62 +190,41 @@ export default function Index() {
           );
         }
         return <DashboardScreen onStartTest={handleStartTest} onStartTestCheckIn={handleStartTestCheckIn} />;
-      case 'tracking':
-        if (showWalkthrough) {
+      case 'check-in':
+        if (showCheckInHistory) {
           return (
-            <PhotoWalkthroughScreen
-              onStart={handleStartPhotoCapture}
-              onBack={handleBackFromWalkthrough}
+            <CheckInHistoryScreen 
+              onBack={handleBackFromCheckInHistory}
             />
           );
         }
-        if (showPhotoCapture) {
+        if (showTestCheckIn) {
+          if (activeTest) {
+            return (
+              <TestQuestionsFlow
+                test={activeTest}
+                onComplete={handleTestCheckInComplete}
+                onCancel={handleBackFromTestCheckIn}
+              />
+            );
+          }
+          // Show loading or error state if no active test
           return (
-            <ImageCaptureScreen
-              onPhotoTaken={handlePhotoTaken}
-              onBack={handleBackFromPhoto}
-              userId={userProfile?.userId}
-            />
+            <Box flex={1} justifyContent="center" alignItems="center" padding="l">
+              <Text variant="title" color="textPrimary" textAlign="center">
+                Loading Test...
+              </Text>
+              <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
+                Please wait while we load your test information
+              </Text>
+            </Box>
           );
         }
         return (
-          <Box flex={1} justifyContent="center" alignItems="center" padding="l">
-            <Text variant="title" color="textPrimary" textAlign="center">
-              📸 Photo Tracking
-            </Text>
-            <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
-              Track your skin progress with photos
-            </Text>
-
-            <Box
-              backgroundColor="backgroundMuted"
-              padding="l"
-              borderRadius="m"
-              borderWidth={1}
-              borderColor="glassBorder"
-              marginTop="xl"
-              alignItems="center"
-            >
-              <Text variant="subtitle" color="textPrimary" marginBottom="s">
-                Ready to take progress photos?
-              </Text>
-              <Text variant="subtitle" color="textSecondary" textAlign="center" marginBottom="l">
-                Follow the walkthrough to capture consistent photos for tracking
-              </Text>
-              
-              <Box
-                backgroundColor="primary"
-                paddingHorizontal="l"
-                paddingVertical="m"
-                borderRadius="m"
-                onTouchEnd={() => setShowWalkthrough(true)}
-              >
-                <Text variant="subtitle" color="white">
-                  Start Photo Walkthrough
-                </Text>
-              </Box>
-            </Box>
-          </Box>
+          <CheckInHomeScreen 
+            onStartCheckIn={handleStartTestCheckIn}
+            onViewAllCheckIns={handleViewAllCheckIns}
+          />
         );
       case 'profile':
         return (

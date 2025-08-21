@@ -103,45 +103,6 @@ export default function CurrentTestWidget({
           {testDescription}
         </Text>
       </Box>
-
-      {/* Action button - only show if today's check-in is not completed */}
-      {!isTodayCompleted ? (
-        <TouchableOpacity onPress={onCompleteCheckIn}>
-          <Box
-            backgroundColor="primary"
-            paddingHorizontal="l"
-            paddingVertical="m"
-            borderRadius="m"
-            alignItems="center"
-          >
-            <Text 
-              variant="subtitle" 
-              color="white"
-            >
-              Complete Today's Check-in
-            </Text>
-          </Box>
-        </TouchableOpacity>
-      ) : (
-        /* Show completion status when check-in is done */
-        <Box
-          backgroundColor="background"
-          paddingHorizontal="l"
-          paddingVertical="m"
-          borderRadius="m"
-          alignItems="center"
-          borderWidth={1}
-          borderColor="glassBorder"
-          opacity={0.6}
-        >
-          <Text 
-            variant="subtitle" 
-            color="textSecondary"
-          >
-            Today's Check-in Completed
-          </Text>
-        </Box>
-      )}
     </Box>
   );
 }

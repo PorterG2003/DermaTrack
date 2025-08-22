@@ -6,7 +6,6 @@ import { mutation, query } from "./_generated/server";
 // Create a new test check-in with answers
 export const createTestCheckin = mutation({
   args: {
-    checkInId: v.optional(v.id("checkIns")), // Optional for standalone test questions
     testId: v.id("tests"),
     userId: v.string(),
     answers: v.array(v.object({
@@ -34,7 +33,6 @@ export const createTestCheckin = mutation({
     const allRequiredAnswered = requiredQuestions.every(q => answeredQuestionIds.has(q.id));
 
     const testCheckinId = await ctx.db.insert("testCheckins", {
-      checkInId: args.checkInId, // This can be undefined for standalone test questions
       testId: args.testId,
       userId: args.userId,
       answers: args.answers.map(answer => ({
@@ -104,10 +102,14 @@ export const getTestCheckin = query({
 export const getTestCheckinByCheckIn = query({
   args: { checkInId: v.id("checkIns") },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("testCheckins")
-      .withIndex("by_checkInId", (q) => q.eq("checkInId", args.checkInId))
-      .first();
+    // First get the check-in to find the testCheckinId
+    const checkIn = await ctx.db.get(args.checkInId);
+    if (!checkIn || !checkIn.testCheckinId) {
+      return null;
+    }
+    
+    // Then get the test check-in data
+    return await ctx.db.get(checkIn.testCheckinId);
   },
 });
 

@@ -5,15 +5,17 @@ import { Alert, Dimensions, Image, TouchableOpacity, View } from 'react-native';
 import { FaceSilhouette, Text } from '../../components';
 import { OnboardingButton } from '../../components/onboarding';
 import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
 import { useThemeContext } from '../../theme/ThemeContext';
 
 interface ImageCaptureScreenProps {
   onPhotoTaken?: (photoUri: string) => void;
+  onPhotosComplete?: (photoIds: { leftPhotoId?: Id<"photos">; centerPhotoId?: Id<"photos">; rightPhotoId?: Id<"photos"> }) => void;
   onBack?: () => void;
   userId?: string;
 }
 
-export function ImageCaptureScreen({ onPhotoTaken, onBack, userId }: ImageCaptureScreenProps) {
+export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, userId }: ImageCaptureScreenProps) {
   const { theme } = useThemeContext();
   const [cameraType, setCameraType] = useState<CameraType>('front');
   const [permission, requestPermission] = useCameraPermissions();
@@ -21,6 +23,7 @@ export function ImageCaptureScreen({ onPhotoTaken, onBack, userId }: ImageCaptur
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [isReviewing, setIsReviewing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [photoIds, setPhotoIds] = useState<{ leftPhotoId?: Id<"photos">; centerPhotoId?: Id<"photos">; rightPhotoId?: Id<"photos"> }>({});
   
   // Camera ref for taking photos
   const cameraRef = useRef<CameraView>(null);
@@ -94,14 +97,20 @@ export function ImageCaptureScreen({ onPhotoTaken, onBack, userId }: ImageCaptur
       const { storageId } = await uploadResult.json();
       
       // Step 3: Save photo reference to database
-      await savePhoto({
+      const photoId = await savePhoto({
         storageId,
         photoType: currentPhotoStep,
         sessionId,
         userId,
       });
       
-      console.log('Photo saved successfully:', { storageId, photoType: currentPhotoStep });
+      console.log('Photo saved successfully:', { photoId, photoType: currentPhotoStep });
+      
+      // Store the photo ID
+      setPhotoIds(prev => ({
+        ...prev,
+        [currentPhotoStep === 'left' ? 'leftPhotoId' : currentPhotoStep === 'center' ? 'centerPhotoId' : 'rightPhotoId']: photoId
+      }));
       
       if (onPhotoTaken) {
         onPhotoTaken(capturedPhoto);
@@ -109,8 +118,14 @@ export function ImageCaptureScreen({ onPhotoTaken, onBack, userId }: ImageCaptur
       
       // Move to next step or finish
       if (currentPhotoStep === 'right') {
-        // All photos taken, go back to main app
-        if (onPhotoTaken) {
+        // All photos taken, return the photo IDs
+        if (onPhotosComplete) {
+          const finalPhotoIds = {
+            ...photoIds,
+            rightPhotoId: photoId
+          };
+          onPhotosComplete(finalPhotoIds);
+        } else if (onPhotoTaken) {
           onPhotoTaken('all-photos-complete');
         }
       } else {

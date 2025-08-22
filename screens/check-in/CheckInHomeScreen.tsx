@@ -22,10 +22,14 @@ export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }:
     userId ? { userId, limit: 30 } : "skip"
   );
 
+  console.log("recentCheckIns", JSON.stringify(recentCheckIns, null, 2));
+
   // Fetch check-ins with test answers for detailed view
   const checkInsWithAnswers = useQuery(api.checkIns.getCheckInsWithTestAnswers, 
     userId ? { userId, limit: 30 } : "skip"
   );
+
+  console.log("checkInsWithAnswers", JSON.stringify(checkInsWithAnswers, null, 2));
 
   // Check if today's check-in is completed
   const isTodayCompleted = React.useMemo(() => {
@@ -124,7 +128,7 @@ export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }:
       {/* Last Check-in */}
       <Box marginBottom="xl">
         
-        {checkInsWithAnswers && checkInsWithAnswers.length > 1 ? (
+        {checkInsWithAnswers && checkInsWithAnswers.length > 0 ? (
           <Box
             backgroundColor="backgroundMuted"
             padding="xl"
@@ -155,7 +159,7 @@ export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }:
               >
                 <Text variant="caption" color="textSecondary" style={{ fontSize: 10 }}>
                   {(() => {
-                    const lastCheckIn = checkInsWithAnswers[1];
+                    const lastCheckIn = checkInsWithAnswers[0];
                     const checkInDate = new Date(lastCheckIn.createdAt);
                     const now = new Date();
                     const daysDiff = Math.floor((now.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -177,7 +181,7 @@ export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }:
             {/* Main content - date and time */}
             <Text variant="title" color="textPrimary" marginBottom="s">
               {(() => {
-                const lastCheckIn = checkInsWithAnswers[1];
+                const lastCheckIn = checkInsWithAnswers[0];
                 const checkInDate = new Date(lastCheckIn.createdAt);
                 return checkInDate.toLocaleDateString('en-US', { 
                   weekday: 'long',
@@ -190,7 +194,7 @@ export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }:
             
             <Text variant="subtitle" color="textSecondary" marginBottom="m">
               {(() => {
-                const lastCheckIn = checkInsWithAnswers[1];
+                const lastCheckIn = checkInsWithAnswers[0];
                 const checkInDate = new Date(lastCheckIn.createdAt);
                 return checkInDate.toLocaleTimeString('en-US', { 
                   hour: '2-digit', 
@@ -200,33 +204,33 @@ export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }:
             </Text>
             
             {/* Test answers overview */}
-            {checkInsWithAnswers[1].testAnswers && (
+            {checkInsWithAnswers[0].testAnswers && (
               <Text variant="subtitle" color="textSecondary" marginBottom="l">
-                {checkInsWithAnswers[1].testAnswers.answers.length} questions answered
+                {checkInsWithAnswers[0].testAnswers.answers.length} questions answered
               </Text>
             )}
             
-                         {/* View All Button */}
-             <Box
-               backgroundColor="background"
-               style={{
-                 backgroundColor: 'transparent',
-                 marginLeft: 'auto',
-               }}
-               onTouchEnd={onViewAllCheckIns}
-             >
-               <Box flexDirection="row" alignItems="center">
-                 <Text variant="caption" fontWeight="600" style={{ color: theme.colors.primary }}>
-                   View All
-                 </Text>
-                 <Ionicons 
-                   name="chevron-forward" 
-                   size={14} 
-                   color={theme.colors.primary}
-                   style={{ marginLeft: 4 }}
-                 />
-               </Box>
+            {/* View All Button */}
+            <Box
+              backgroundColor="background"
+              style={{
+                backgroundColor: 'transparent',
+                marginLeft: 'auto',
+              }}
+              onTouchEnd={onViewAllCheckIns}
+            >
+              <Box flexDirection="row" alignItems="center">
+                <Text variant="caption" fontWeight="600" style={{ color: theme.colors.primary }}>
+                  View All
+                </Text>
+                <Ionicons 
+                  name="chevron-forward" 
+                  size={14} 
+                  color={theme.colors.primary}
+                  style={{ marginLeft: 4 }}
+                />
               </Box>
+            </Box>
           </Box>
         ) : (
           <Box 

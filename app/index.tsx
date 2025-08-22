@@ -1,5 +1,5 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Authenticated, AuthLoading, Unauthenticated, useMutation, useQuery } from "convex/react";
+import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
@@ -22,11 +22,11 @@ import {
   SkinTypeStep,
   WelcomeStep
 } from "../screens/onboarding";
-import { TestQuestionsFlow } from "../screens/test-questions";
+
 import { TestSelectionScreen } from "../screens/test-selection";
 
 import { CheckInHistoryScreen, CheckInHomeScreen } from "../screens/check-in";
-import { ImageCaptureScreen, PhotoWalkthroughScreen } from "../screens/tracking";
+import { ImageCaptureScreen, PhotoWalkthroughScreen, UnifiedCheckInFlow } from "../screens/tracking";
 import { useThemeContext } from "../theme/ThemeContext";
 
 export default function Index() {
@@ -36,8 +36,8 @@ export default function Index() {
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showTestSelection, setShowTestSelection] = useState(false);
-  const [showTestCheckIn, setShowTestCheckIn] = useState(false);
   const [showCheckInHistory, setShowCheckInHistory] = useState(false);
+  const [showUnifiedCheckIn, setShowUnifiedCheckIn] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const insets = useSafeAreaInsets();
 
@@ -49,8 +49,7 @@ export default function Index() {
     userProfile?.userId ? { userId: userProfile.userId } : "skip"
   );
 
-  // Mutation to create test check-in (without creating a regular check-in)
-  const createTestCheckin = useMutation(api.testCheckins.createTestCheckin);
+
 
   const handleSignOut = async () => {
     try {
@@ -99,54 +98,36 @@ export default function Index() {
     setShowTestSelection(true);
   };
 
+  const handleStartUnifiedCheckIn = () => {
+    if (activeTest) {
+      setShowUnifiedCheckIn(true);
+    } else {
+      // No active test, show test selection
+      setShowTestSelection(true);
+    }
+  };
+
+  const handleUnifiedCheckInComplete = () => {
+    setShowUnifiedCheckIn(false);
+    // TODO: Show success message or refresh dashboard
+  };
+
+  const handleUnifiedCheckInCancel = () => {
+    setShowUnifiedCheckIn(false);
+  };
+
   const handleTestCreated = (testId: string) => {
     setShowTestSelection(false);
-    // Test created successfully, user is back on dashboard
+    // Test created successfully, start the unified check-in flow
     console.log('Test created with ID:', testId);
+    setShowUnifiedCheckIn(true);
   };
 
   const handleBackFromTestSelection = () => {
     setShowTestSelection(false);
   };
 
-  const handleStartTestCheckIn = () => {
-    setShowTestCheckIn(true);
-  };
 
-  const handleTestCheckInComplete = async (answers: Array<{
-    questionId: string;
-    answer: string | number | boolean;
-    questionType: 'rating' | 'yesNo' | 'text' | 'scale';
-  }>) => {
-    if (!userProfile?.userId || !activeTest) {
-      console.error('Missing userId or activeTest for check-in creation');
-      setShowTestCheckIn(false);
-      return;
-    }
-
-    try {
-      // Create the test check-in directly (without creating a regular check-in)
-      const result = await createTestCheckin({
-        testId: activeTest._id,
-        userId: userProfile.userId,
-        answers: answers,
-      });
-      
-      console.log('Test check-in created successfully:', result);
-      setShowTestCheckIn(false);
-      
-      // The dashboard will automatically refresh due to Convex's reactivity
-      // and show "Today's Check-in Completed" instead of the button
-    } catch (error) {
-      console.error('Failed to create test check-in:', error);
-      // TODO: Show error message to user
-      setShowTestCheckIn(false);
-    }
-  };
-
-  const handleBackFromTestCheckIn = () => {
-    setShowTestCheckIn(false);
-  };
 
   const handleViewAllCheckIns = () => {
     setShowCheckInHistory(true);
@@ -164,32 +145,11 @@ export default function Index() {
             <TestSelectionScreen
               onTestCreated={handleTestCreated}
               onBack={handleBackFromTestSelection}
+              isForCheckIn={true}
             />
           );
         }
-        if (showTestCheckIn) {
-          if (activeTest) {
-            return (
-              <TestQuestionsFlow
-                test={activeTest}
-                onComplete={handleTestCheckInComplete}
-                onCancel={handleBackFromTestCheckIn}
-              />
-            );
-          }
-          // Show loading or error state if no active test
-          return (
-            <Box flex={1} justifyContent="center" alignItems="center" padding="l">
-              <Text variant="title" color="textPrimary" textAlign="center">
-                Loading Test...
-              </Text>
-              <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
-                Please wait while we load your test information
-              </Text>
-            </Box>
-          );
-        }
-        return <DashboardScreen onStartTest={handleStartTest} onStartTestCheckIn={handleStartTestCheckIn} />;
+        return <DashboardScreen onStartTest={handleStartTest} onStartUnifiedCheckIn={handleStartUnifiedCheckIn} />;
       case 'check-in':
         if (showCheckInHistory) {
           return (
@@ -198,31 +158,9 @@ export default function Index() {
             />
           );
         }
-        if (showTestCheckIn) {
-          if (activeTest) {
-            return (
-              <TestQuestionsFlow
-                test={activeTest}
-                onComplete={handleTestCheckInComplete}
-                onCancel={handleBackFromTestCheckIn}
-              />
-            );
-          }
-          // Show loading or error state if no active test
-          return (
-            <Box flex={1} justifyContent="center" alignItems="center" padding="l">
-              <Text variant="title" color="textPrimary" textAlign="center">
-                Loading Test...
-              </Text>
-              <Text variant="subtitle" color="textSecondary" textAlign="center" marginTop="m">
-                Please wait while we load your test information
-              </Text>
-            </Box>
-          );
-        }
         return (
           <CheckInHomeScreen 
-            onStartCheckIn={handleStartTestCheckIn}
+            onStartCheckIn={handleStartUnifiedCheckIn}
             onViewAllCheckIns={handleViewAllCheckIns}
           />
         );
@@ -360,6 +298,15 @@ export default function Index() {
                     userId={userProfile?.userId}
                   />
                 </View>
+              ) : showUnifiedCheckIn ? (
+                <View style={{ flex: 1 }}>
+                  <UnifiedCheckInFlow
+                    test={activeTest || undefined}
+                    userId={userProfile?.userId || ''}
+                    onComplete={handleUnifiedCheckInComplete}
+                    onCancel={handleUnifiedCheckInCancel}
+                  />
+                </View>
               ) : (
                 <View style={{ flex: 1 }}>
                   {renderTabContent()}
@@ -377,7 +324,7 @@ export default function Index() {
         </View>
         
         {/* Tab bar positioned absolutely at bottom, below safe area */}
-        {isOnboardingComplete && !showWalkthrough && !showPhotoCapture && (
+        {isOnboardingComplete && !showWalkthrough && !showPhotoCapture && !showUnifiedCheckIn && (
           <TabBar 
             activeTab={activeTab} 
             onTabPress={setActiveTab}

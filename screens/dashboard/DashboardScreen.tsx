@@ -8,10 +8,10 @@ import { useThemeContext } from '../../theme/ThemeContext';
 
 interface DashboardScreenProps {
   onStartTest?: () => void;
-  onStartTestCheckIn?: () => void;
+  onStartUnifiedCheckIn?: () => void;
 }
 
-export default function DashboardScreen({ onStartTest, onStartTestCheckIn }: DashboardScreenProps) {
+export default function DashboardScreen({ onStartTest, onStartUnifiedCheckIn }: DashboardScreenProps) {
   const { theme } = useThemeContext();
   const { profile } = useProfile();
   const { userId } = useUserPhotos();
@@ -104,8 +104,7 @@ export default function DashboardScreen({ onStartTest, onStartTestCheckIn }: Das
   };
 
   const handleCompleteCheckIn = () => {
-    // Navigate to check-in flow with test questions
-    onStartTestCheckIn?.();
+    onStartUnifiedCheckIn?.();
   };
 
   const handleCheckIn = () => {

@@ -11,9 +11,10 @@ import { useThemeContext } from '../../theme/ThemeContext';
 interface TestSelectionScreenProps {
   onTestCreated?: (testId: Id<"tests">) => void;
   onBack?: () => void;
+  isForCheckIn?: boolean; // Indicates if this is being shown for check-in purposes
 }
 
-export default function TestSelectionScreen({ onTestCreated, onBack }: TestSelectionScreenProps) {
+export default function TestSelectionScreen({ onTestCreated, onBack, isForCheckIn = false }: TestSelectionScreenProps) {
   const { theme } = useThemeContext();
   const { userId } = useUserPhotos();
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"testTemplates"> | null>(null);
@@ -110,11 +111,14 @@ export default function TestSelectionScreen({ onTestCreated, onBack }: TestSelec
             </TouchableOpacity>
           )}
           <Text variant="title" color="textPrimary">
-            Select a Test
+            {isForCheckIn ? 'Select a Test for Check-in' : 'Select a Test'}
           </Text>
         </Box>
         <Text variant="subtitle" color="textSecondary">
-          Choose a test to track your skin health journey
+          {isForCheckIn 
+            ? 'Choose a test to start your daily check-in' 
+            : 'Choose a test to track your skin health journey'
+          }
         </Text>
       </Box>
 

@@ -18,8 +18,8 @@ export default function CurrentTestWidget({
   testDescription, 
   daysRemaining, 
   isTodayCompleted = false,
-  onStartTest, 
-  onCompleteCheckIn 
+  onStartTest,
+  onCompleteCheckIn
 }: CurrentTestWidgetProps) {
   const { theme } = useThemeContext();
 
@@ -103,6 +103,21 @@ export default function CurrentTestWidget({
           {testDescription}
         </Text>
       </Box>
+
+      {/* Complete Check-in Button */}
+      <TouchableOpacity onPress={onCompleteCheckIn}>
+        <Box
+          backgroundColor="primary"
+          paddingHorizontal="l"
+          paddingVertical="m"
+          borderRadius="m"
+          alignItems="center"
+        >
+          <Text variant="subtitle" color="white">
+            Complete Today's Check-in
+          </Text>
+        </Box>
+      </TouchableOpacity>
     </Box>
   );
 }

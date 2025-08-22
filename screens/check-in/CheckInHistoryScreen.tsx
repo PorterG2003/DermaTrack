@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
-import { Box, Text } from '../../components';
+import { Box, CheckInHistoryAISummary, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
 import { useProfile, useUserPhotos } from '../../hooks/useProfile';
 import { useThemeContext } from '../../theme/ThemeContext';
@@ -269,48 +269,26 @@ export default function CheckInHistoryScreen({ onBack }: CheckInHistoryScreenPro
             </Box>
             
             {/* Time */}
-            <Text variant="caption" color="textSecondary" marginBottom="m">
+            <Text variant="caption" color="textSecondary" marginBottom="l">
               {formatTime(checkIn.createdAt)}
             </Text>
                 
             {/* AI Summary */}
             {checkIn.testAnswers?.summary && (
-              <Box 
-                marginTop="m"
-                padding="m"
-                backgroundColor="background"
-                borderRadius="s"
-                borderWidth={1}
-                borderColor="glassBorder"
-              >
-                <Box flexDirection="row" alignItems="center" marginBottom="s">
-                  <Ionicons 
-                    name="sparkles" 
-                    size={16} 
-                    color={theme.colors.categoryIngredient}
-                    style={{ marginRight: 6 }}
-                  />
-                  <Text variant="caption" fontWeight="600" color="categoryIngredient">
-                    AI Summary
-                  </Text>
-                </Box>
-                <Text variant="subtitle" color="textPrimary" lineHeight={20}>
-                  {checkIn.testAnswers.summary}
-                </Text>
-              </Box>
+              <CheckInHistoryAISummary summary={checkIn.testAnswers.summary} />
             )}
             
             {/* Test information with name */}
             {checkIn.testId && checkIn.test && (
-              <Box marginBottom="m">
-                <Text variant="subtitle" color="textPrimary" marginBottom="s">
+              <Box marginTop="l" marginBottom="m">
+                <Text variant="subtitle" color="textPrimary" marginBottom="m">
                   Test
                 </Text>
                 <Box 
                   backgroundColor="backgroundMuted"
                   borderWidth={1}
                   paddingHorizontal="m"
-                  paddingVertical="xs"
+                  paddingVertical="s"
                   borderRadius="m"
                   alignSelf="flex-start"
                   flexDirection="row"
@@ -338,8 +316,8 @@ export default function CheckInHistoryScreen({ onBack }: CheckInHistoryScreenPro
             
             {/* Photos info */}
             {(checkIn.leftPhotoId || checkIn.centerPhotoId || checkIn.rightPhotoId) && (
-              <Box marginBottom="m">
-                <Text variant="subtitle" color="textPrimary" marginBottom="s">
+              <Box marginTop="l" marginBottom="m">
+                <Text variant="subtitle" color="textPrimary" marginBottom="m">
                   Photos Taken
                 </Text>
                 <Box flexDirection="row" alignItems="center">
@@ -347,7 +325,7 @@ export default function CheckInHistoryScreen({ onBack }: CheckInHistoryScreenPro
                     name="camera" 
                     size={16} 
                     color={theme.colors.textSecondary}
-                    style={{ marginRight: 6 }}
+                    style={{ marginRight: 8 }}
                   />
                   <Text variant="caption" color="textSecondary">
                     Progress photos captured

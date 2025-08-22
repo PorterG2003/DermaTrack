@@ -16,7 +16,10 @@ export { default as StreakWidget } from './widgets/StreakWidget';
 export { FaceSilhouette } from './data-display/FaceSilhouette';
 export { Showcase } from './data-display/Showcase';
 
+export { AISummaryDisplay } from './feedback/AISummaryDisplay';
+export { CheckInHistoryAISummary } from './feedback/CheckInHistoryAISummary';
 export { LoadingScreen } from './feedback/LoadingScreen';
+export { NoActiveTestScreen } from './feedback/NoActiveTestScreen';
 
 export { Box, GlassCard, Text } from './Glass';
 

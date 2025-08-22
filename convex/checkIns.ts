@@ -1,5 +1,4 @@
 import { v } from "convex/values";
-import { api } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 
 // Check-in mutations and queries
@@ -77,7 +76,6 @@ export const createCheckInWithTestAnswers = mutation({
 
     // Create the test check-in
     const testCheckinId = await ctx.db.insert("testCheckins", {
-      checkInId: checkInId,
       testId: args.testId,
       userId: args.userId,
       answers: args.testAnswers.map(answer => ({
@@ -89,16 +87,23 @@ export const createCheckInWithTestAnswers = mutation({
       updatedAt: Date.now(),
     });
 
+    // Update the check-in with the test check-in ID
+    await ctx.db.patch(checkInId, {
+      testCheckinId: testCheckinId,
+    });
+
     // Generate AI summary asynchronously (don't wait for it to complete)
     if (allRequiredAnswered) {
-      // Call the AI summarization function directly
-      // Note: This will block until completion, but provides immediate feedback
-      try {
-        await ctx.runMutation(api.aiSummarization.generateCheckInSummary, { testCheckinId });
-      } catch (error) {
-        console.error("Failed to generate AI summary:", error);
-        // Continue with check-in creation even if summary fails
-      }
+      console.log("�� Check-in Creation: AI summary will be generated separately", { testCheckinId });
+      
+      // Note: AI summarization is now handled separately via actions
+      // This prevents blocking the check-in creation and allows for better error handling
+    } else {
+      console.log("ℹ️ Check-in Creation: Skipping AI summary - not all required questions answered", { 
+        testCheckinId,
+        requiredQuestions: test.formStructure.questions.filter(q => q.required).length,
+        answeredQuestions: args.testAnswers.length
+      });
     }
     
     return {
@@ -145,11 +150,9 @@ export const getCheckInsWithTestAnswers = query({
     // For each check-in, fetch its associated test answers and test details if it has a test
     const checkInsWithAnswers = await Promise.all(
       checkIns.map(async (checkIn) => {
-        if (checkIn.testId) {
-          const testCheckin = await ctx.db
-            .query("testCheckins")
-            .withIndex("by_checkInId", (q) => q.eq("checkInId", checkIn._id))
-            .first();
+        if (checkIn.testId && checkIn.testCheckinId) {
+          // Fetch the test check-in data directly using the ID
+          const testCheckin = await ctx.db.get(checkIn.testCheckinId);
           
           // Fetch the actual test details
           const test = await ctx.db.get(checkIn.testId);

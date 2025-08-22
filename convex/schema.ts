@@ -74,6 +74,7 @@ const schema = defineSchema({
     userId: v.string(), // OAuth subject (string, not Convex ID)
     createdAt: v.number(), // Timestamp of check-in
     testId: v.optional(v.id("tests")), // Reference to current test (if any)
+    testCheckinId: v.optional(v.id("testCheckins")), // Reference to test check-in data
     completed: v.boolean(), // Whether this check-in was completed
     
     // Photo references - store the actual photo IDs
@@ -139,7 +140,6 @@ const schema = defineSchema({
 
   // Test check-in answers - stores responses to test questions for each check-in
   testCheckins: defineTable({
-    checkInId: v.optional(v.id("checkIns")), // Reference to the check-in (optional for standalone test questions)
     testId: v.id("tests"), // Reference to the test
     userId: v.string(), // OAuth subject (string, not Convex ID) - denormalized for easier querying
     answers: v.array(v.object({
@@ -157,7 +157,6 @@ const schema = defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_checkInId", ["checkInId"])
     .index("by_testId", ["testId"])
     .index("by_userId", ["userId"])
     .index("by_userId_testId", ["userId", "testId"])

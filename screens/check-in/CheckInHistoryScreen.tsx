@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { Box, CheckInHistoryAISummary, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
-import { useProfile, useUserPhotos } from '../../hooks/useProfile';
+import { useProfile } from '../../hooks/useProfile';
 import { useThemeContext } from '../../theme/ThemeContext';
 
 interface CheckInHistoryScreenProps {
@@ -16,7 +16,7 @@ type FilterType = 'all' | 'thisWeek' | 'thisMonth' | 'thisYear';
 export default function CheckInHistoryScreen({ onBack }: CheckInHistoryScreenProps) {
   const { theme } = useThemeContext();
   const { profile } = useProfile();
-  const { userId } = useUserPhotos();
+  const userId = profile?._id;
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   
   // Fetch check-ins with test answers

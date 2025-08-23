@@ -7,7 +7,7 @@ import { mutation, query } from "./_generated/server";
 export const createTestCheckin = mutation({
   args: {
     testId: v.id("tests"),
-    userId: v.string(),
+    userId: v.id("users"),
     answers: v.array(v.object({
       questionId: v.string(),
       answer: v.union(v.string(), v.number(), v.boolean()),
@@ -117,9 +117,30 @@ export const getTestCheckinByCheckIn = query({
 export const getTestCheckinsByTest = query({
   args: { testId: v.id("tests") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    // Get the test to verify ownership
+    const test = await ctx.db.get(args.testId);
+    if (!test) {
+      throw new Error("Test not found");
+    }
+
+    // Verify the user owns this test
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", identity.email))
+      .first();
+
+    if (!user || user._id !== test.userId) {
+      throw new Error("Unauthorized");
+    }
+
     return await ctx.db
       .query("testCheckins")
-      .withIndex("by_testId", (q) => q.eq("testId", args.testId))
+      .withIndex("by_userId_testId", (q) => q.eq("userId", user._id).eq("testId", args.testId))
       .order("desc")
       .collect();
   },
@@ -127,7 +148,7 @@ export const getTestCheckinsByTest = query({
 
 // Get test check-ins for a user
 export const getTestCheckinsByUser = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("testCheckins")
@@ -139,7 +160,7 @@ export const getTestCheckinsByUser = query({
 
 // Get test check-ins for a user and specific test
 export const getTestCheckinsByUserAndTest = query({
-  args: { userId: v.string(), testId: v.id("tests") },
+  args: { userId: v.id("users"), testId: v.id("tests") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("testCheckins")
@@ -153,7 +174,7 @@ export const getTestCheckinsByUserAndTest = query({
 
 // Get recent test check-ins for a user
 export const getRecentTestCheckins = query({
-  args: { userId: v.string(), limit: v.optional(v.number()) },
+  args: { userId: v.id("users"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
     return await ctx.db

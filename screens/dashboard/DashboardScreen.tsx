@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import { Box, CurrentTestWidget, StreakWidget, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
-import { useProfile, useUserPhotos } from '../../hooks/useProfile';
+import { useProfile } from '../../hooks/useProfile';
 import { useThemeContext } from '../../theme/ThemeContext';
 
 interface DashboardScreenProps {
@@ -14,9 +14,9 @@ interface DashboardScreenProps {
 export default function DashboardScreen({ onStartTest, onStartUnifiedCheckIn }: DashboardScreenProps) {
   const { theme } = useThemeContext();
   const { profile } = useProfile();
-  const { userId } = useUserPhotos();
+  const userId = profile?._id;
   
-  // Fetch user's active test
+  // Fetch user's active test 
   const activeTest = useQuery(api.tests.getActiveTest, 
     userId ? { userId } : "skip"
   );

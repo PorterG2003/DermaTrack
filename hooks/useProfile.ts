@@ -1,7 +1,11 @@
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 
 export interface Profile {
+  _id: string;
+  email?: string;
+  name?: string;
+  image?: string;
   gender?: 'male' | 'female';
   dateOfBirth?: number;
   skinType?: 'oily' | 'dry' | 'combination' | 'normal' | 'sensitive';
@@ -9,33 +13,20 @@ export interface Profile {
   goals?: ('clearAcne' | 'preventBreakouts' | 'reduceScars' | 'buildRoutine' | 'trackProgress')[];
   cameraPermission?: boolean;
   notificationPreference?: 'daily' | 'weekly' | 'important' | 'none';
+  onboardingCompleted?: boolean;
 }
 
 export function useProfile() {
   const profile = useQuery(api.userProfiles.getProfile);
-  const upsertProfile = useMutation(api.userProfiles.upsertProfile);
+  const updateProfile = useMutation(api.userProfiles.updateProfile);
   const completeOnboarding = useMutation(api.userProfiles.completeOnboarding);
   const resetOnboarding = useMutation(api.userProfiles.resetOnboarding);
 
-  // Debug logging
-  console.log('🔍 useProfile hook:', { profile, profileType: typeof profile, isNull: profile === null, isUndefined: profile === undefined });
-
-  // Provide a default profile object to prevent null reference errors
-  const safeProfile: Profile = profile || {
-    gender: undefined,
-    dateOfBirth: undefined,
-    skinType: undefined,
-    primaryConcerns: undefined,
-    goals: undefined,
-    cameraPermission: undefined,
-    notificationPreference: undefined,
-  };
-  
   const isOnboardingComplete = profile?.onboardingCompleted ?? false;
   const isLoading = profile === undefined;
 
-  const updateProfile = async (data: Partial<Profile>) => {
-    await upsertProfile(data);
+  const updateProfileData = async (data: Partial<Profile>) => {
+    await updateProfile(data);
   };
 
   const markOnboardingComplete = async () => {
@@ -47,25 +38,11 @@ export function useProfile() {
   };
 
   return {
-    profile: safeProfile,
+    profile,
     isOnboardingComplete,
     isLoading,
-    updateProfile,
+    updateProfile: updateProfileData,
     markOnboardingComplete,
     resetOnboarding: resetOnboardingData,
-  };
-}
-
-// Hook to get user photos
-export function useUserPhotos() {
-  const profile = useQuery(api.userProfiles.getProfile);
-  const photos = useQuery(api.userProfiles.getPhotosByUser, 
-    profile?.userId ? { userId: profile.userId } : "skip"
-  );
-
-  return {
-    photos: photos || [],
-    isLoading: photos === undefined,
-    userId: profile?.userId,
   };
 }

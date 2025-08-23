@@ -1,42 +1,86 @@
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-// Get user profile
+// Create or get user profile when they first sign in
+export const storeUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    console.log('🔍 storeUser.identity:', identity);
+    if (!identity) {
+      throw new Error("Called storeUser without authentication present");
+    }
+
+    // Extract the user ID from the subject (first part before the first |)
+    const userId = identity.subject.split('|')[0];
+    console.log('🔍 Extracted userId from subject:', userId);
+
+    // Get the user from Convex Auth's built-in users table
+    const user = await ctx.db.get(userId as Id<"users">);
+    
+    if (!user) {
+      throw new Error("User not found in built-in users table");
+    }
+
+    // Check if we already have a profile for this user
+    const existingProfile = await ctx.db
+      .query("userProfiles")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .first();
+
+    if (existingProfile) {
+      // Profile already exists, return it
+      return existingProfile._id;
+    }
+
+    // Create a new profile for this user
+    return await ctx.db.insert("userProfiles", {
+      userId: user._id,
+      onboardingCompleted: false,
+    });
+  },
+});
+
+// Get current user's profile
 export const getProfile = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    console.log('🔍 getProfile query:', { 
-      hasIdentity: !!identity, 
-      identitySubject: identity?.subject,
-      identityEmail: identity?.email 
-    });
-    
-    if (!identity) {
-      console.log('🔍 getProfile: No identity found, returning null');
-      return null;
-    }
+    if (!identity) return null;
 
+    // Extract the user ID from the subject (first part before the first |)
+    const userId = identity.subject.split('|')[0];
+
+    // Get the user from Convex Auth's built-in users table
+    const user = await ctx.db.get(userId as Id<"users">);
+
+    if (!user) return null;
+
+    // Get the user's profile
     const profile = await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .first();
 
-    console.log('🔍 getProfile: Profile found:', { 
-      hasProfile: !!profile, 
-      profileId: profile?._id,
-      profileUserId: profile?.userId 
-    });
+    if (!profile) return null;
 
-    return profile;
+    // Return combined data
+    return {
+      ...profile,
+      _id: user._id, // Use the built-in user ID for compatibility
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    };
   },
 });
 
-// Create or update user profile
-export const upsertProfile = mutation({
+// Update user profile
+export const updateProfile = mutation({
   args: {
     gender: v.optional(v.union(v.literal("male"), v.literal("female"))),
-    dateOfBirth: v.optional(v.number()), // Unix timestamp for DOB
+    dateOfBirth: v.optional(v.number()),
     skinType: v.optional(v.union(
       v.literal("oily"), 
       v.literal("dry"), 
@@ -72,28 +116,28 @@ export const upsertProfile = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    const existingProfile = await ctx.db
+    // Extract the user ID from the subject (first part before the first |)
+    const userId = identity.subject.split('|')[0];
+
+    // Get the user from Convex Auth's built-in users table
+    const user = await ctx.db.get(userId as Id<"users">);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Get the user's profile
+    const profile = await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .first();
 
-    const now = Date.now();
-
-    if (existingProfile) {
-      // Update existing profile
-      return await ctx.db.patch(existingProfile._id, {
-        ...args,
-        updatedAt: now,
-      });
-    } else {
-      // Create new profile
-      return await ctx.db.insert("userProfiles", {
-        userId: identity.subject,
-        ...args,
-        createdAt: now,
-        updatedAt: now,
-      });
+    if (!profile) {
+      throw new Error("User profile not found");
     }
+
+    // Update the profile
+    return await ctx.db.patch(profile._id, args);
   },
 });
 
@@ -104,25 +148,30 @@ export const completeOnboarding = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
+    // Extract the user ID from the subject (first part before the first |)
+    const userId = identity.subject.split('|')[0];
+
+    // Get the user from Convex Auth's built-in users table
+    const user = await ctx.db.get(userId as Id<"users">);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Get the user's profile
     const profile = await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .first();
 
-    if (profile) {
-      return await ctx.db.patch(profile._id, {
-        onboardingCompleted: true,
-        updatedAt: Date.now(),
-      });
-    } else {
-      // Create profile if it doesn't exist
-      return await ctx.db.insert("userProfiles", {
-        userId: identity.subject,
-        onboardingCompleted: true,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+    if (!profile) {
+      throw new Error("User profile not found");
     }
+
+    // Mark onboarding as completed
+    return await ctx.db.patch(profile._id, {
+      onboardingCompleted: true,
+    });
   },
 });
 
@@ -133,9 +182,18 @@ export const isOnboardingCompleted = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return false;
 
+    // Extract the user ID from the subject (first part before the first |)
+    const userId = identity.subject.split('|')[0];
+
+    // Get the user from Convex Auth's built-in users table
+    const user = await ctx.db.get(userId as Id<"users">);
+
+    if (!user) return false;
+
+    // Get the user's profile
     const profile = await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .first();
 
     return profile?.onboardingCompleted ?? false;
@@ -149,81 +207,29 @@ export const resetOnboarding = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
+    // Extract the user ID from the subject (first part before the first |)
+    const userId = identity.subject.split('|')[0];
+
+    // Get the user from Convex Auth's built-in users table
+    const user = await ctx.db.get(userId as Id<"users">);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Get the user's profile
     const profile = await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .first();
 
-    if (profile) {
-      return await ctx.db.patch(profile._id, {
-        onboardingCompleted: false,
-        updatedAt: Date.now(),
-      });
-    } else {
-      throw new Error("Profile not found");
+    if (!profile) {
+      throw new Error("User profile not found");
     }
-  },
-});
 
-// Photo upload mutations
-export const generatePhotoUploadUrl = mutation({
-  handler: async (ctx) => {
-    // TODO: Add authentication check here
-    // const identity = await ctx.auth.getUserIdentity();
-    // if (!identity) {
-    //   throw new Error("Not authenticated");
-    // }
-    
-    return await ctx.storage.generateUploadUrl();
-  },
-});
-
-export const savePhoto = mutation({
-  args: {
-    storageId: v.id("_storage"),
-    photoType: v.union(v.literal("left"), v.literal("center"), v.literal("right")),
-    sessionId: v.string(),
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // TODO: Add authentication check here
-    // const identity = await ctx.auth.getUserIdentity();
-    // if (!identity) {
-    //   throw new Error("Not authenticated");
-    // }
-    
-    const photoId = await ctx.db.insert("photos", {
-      userId: args.userId,
-      storageId: args.storageId,
-      photoType: args.photoType,
-      sessionId: args.sessionId,
-      createdAt: Date.now(),
+    // Reset onboarding
+    return await ctx.db.patch(profile._id, {
+      onboardingCompleted: false,
     });
-    
-    return photoId;
   },
 });
-
-export const getPhotosBySession = query({
-  args: { sessionId: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("photos")
-      .withIndex("by_sessionId", (q) => q.eq("sessionId", args.sessionId))
-      .order("asc")
-      .collect();
-  },
-});
-
-export const getPhotosByUser = query({
-  args: { userId: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("photos")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .order("desc")
-      .collect();
-  },
-});
-
-

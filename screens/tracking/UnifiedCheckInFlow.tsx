@@ -27,7 +27,7 @@ interface UnifiedCheckInFlowProps {
       }>;
     };
   };
-  userId: string;
+  userId: Id<"users">;
   onComplete: () => void;
   onCancel: () => void;
 }

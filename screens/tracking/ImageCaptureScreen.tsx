@@ -12,7 +12,7 @@ interface ImageCaptureScreenProps {
   onPhotoTaken?: (photoUri: string) => void;
   onPhotosComplete?: (photoIds: { leftPhotoId?: Id<"photos">; centerPhotoId?: Id<"photos">; rightPhotoId?: Id<"photos"> }) => void;
   onBack?: () => void;
-  userId?: string;
+  userId?: Id<"users">;
 }
 
 export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, userId }: ImageCaptureScreenProps) {
@@ -29,8 +29,8 @@ export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, use
   const cameraRef = useRef<CameraView>(null);
   
   // Convex mutations
-  const generateUploadUrl = useMutation(api.userProfiles.generatePhotoUploadUrl);
-  const savePhoto = useMutation(api.userProfiles.savePhoto);
+  const generateUploadUrl = useMutation(api.photos.generatePhotoUploadUrl);
+  const savePhoto = useMutation(api.photos.savePhoto);
   
   // Generate a unique session ID for this photo session
   const sessionId = React.useMemo(() => `session-${Date.now()}`, []);

@@ -5,10 +5,11 @@ import { v } from "convex/values";
 const schema = defineSchema({
   ...authTables,
   
-  // User profiles with onboarding data
+  // User profiles - stores our custom profile data
   userProfiles: defineTable({
-    userId: v.string(), // OAuth subject (string, not Convex ID)
-    // Basic info
+    userId: v.id("users"), // Reference to Convex Auth's built-in users table
+    
+    // Our custom profile fields
     gender: v.optional(v.union(v.literal("male"), v.literal("female"))),
     dateOfBirth: v.optional(v.number()), // Unix timestamp for DOB
     skinType: v.optional(v.union(
@@ -18,8 +19,6 @@ const schema = defineSchema({
       v.literal("normal"), 
       v.literal("sensitive")
     )),
-    
-    // Preferences
     primaryConcerns: v.optional(v.array(v.union(
       v.literal("acne"), 
       v.literal("blackheads"), 
@@ -35,8 +34,6 @@ const schema = defineSchema({
       v.literal("buildRoutine"), 
       v.literal("trackProgress")
     ))),
-    
-    // Permissions and settings
     cameraPermission: v.optional(v.boolean()),
     notificationPreference: v.optional(v.union(
       v.literal("daily"), 
@@ -44,18 +41,13 @@ const schema = defineSchema({
       v.literal("important"), 
       v.literal("none")
     )),
-    
-    // Metadata
     onboardingCompleted: v.optional(v.boolean()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
   })
-    .index("by_userId", ["userId"])
-    .index("by_onboardingCompleted", ["onboardingCompleted"]),
-
+    .index("by_userId", ["userId"]),
+  
   // User acne progress photos
   photos: defineTable({
-    userId: v.string(), // OAuth subject (string, not Convex ID)
+    userId: v.id("users"), // Reference the users table (Convex ID)
     storageId: v.id("_storage"), // Reference to Convex storage
     photoType: v.union(
       v.literal("left"), 
@@ -71,7 +63,7 @@ const schema = defineSchema({
 
   // User check-ins
   checkIns: defineTable({
-    userId: v.string(), // OAuth subject (string, not Convex ID)
+    userId: v.id("users"), // Reference the users table (Convex ID)
     createdAt: v.number(), // Timestamp of check-in
     testId: v.optional(v.id("tests")), // Reference to current test (if any)
     testCheckinId: v.optional(v.id("testCheckins")), // Reference to test check-in data
@@ -88,7 +80,7 @@ const schema = defineSchema({
 
   // User tests/experiments
   tests: defineTable({
-    userId: v.string(), // OAuth subject (string, not Convex ID)
+    userId: v.id("users"), // Reference the users table (Convex ID)
     name: v.string(), // e.g., "New Product Test", "Routine Change Test"
     description: v.optional(v.string()), // Optional description of the test
     formStructure: v.object({
@@ -141,7 +133,7 @@ const schema = defineSchema({
   // Test check-in answers - stores responses to test questions for each check-in
   testCheckins: defineTable({
     testId: v.id("tests"), // Reference to the test
-    userId: v.string(), // OAuth subject (string, not Convex ID) - denormalized for easier querying
+    userId: v.id("users"), // Reference the users table (Convex ID)
     answers: v.array(v.object({
       questionId: v.string(), // Matches the question ID from the test form structure
       answer: v.union(
@@ -157,7 +149,6 @@ const schema = defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_testId", ["testId"])
     .index("by_userId", ["userId"])
     .index("by_userId_testId", ["userId", "testId"])
     .index("by_userId_date", ["userId", "createdAt"]),

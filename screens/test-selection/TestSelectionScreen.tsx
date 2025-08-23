@@ -1,3 +1,4 @@
+import { useProfile } from '@/hooks/useProfile';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery } from 'convex/react';
 import React, { useState } from 'react';
@@ -5,7 +6,6 @@ import { Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { Box, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
-import { useUserPhotos } from '../../hooks/useProfile';
 import { useThemeContext } from '../../theme/ThemeContext';
 
 interface TestSelectionScreenProps {
@@ -16,7 +16,8 @@ interface TestSelectionScreenProps {
 
 export default function TestSelectionScreen({ onTestCreated, onBack, isForCheckIn = false }: TestSelectionScreenProps) {
   const { theme } = useThemeContext();
-  const { userId } = useUserPhotos();
+  const { profile } = useProfile();
+  const userId = profile?._id;
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"testTemplates"> | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 

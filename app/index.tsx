@@ -1,27 +1,16 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Box, TabBar, Text } from "../components";
-import { api } from "../convex/_generated/api";
 import { useProfile } from "../hooks/useProfile";
+import { useStoreUserEffect } from "../hooks/useStoreUserEffect";
 import { AuthScreen } from "../screens";
 import { DashboardScreen } from "../screens/dashboard";
-import {
-  CompleteStep,
-  DateOfBirthStep,
-  GenderStep,
-  GoalsStep,
-  NotificationsStep,
-  OnboardingFlow,
-  PhotoPermissionsStep,
-  PrimaryConcernsStep,
-  SkinTypeStep,
-  WelcomeStep
-} from "../screens/onboarding";
+
 
 import { TestSelectionScreen } from "../screens/test-selection";
 
@@ -29,10 +18,24 @@ import { CheckInHistoryScreen, CheckInHomeScreen } from "../screens/check-in";
 import { ImageCaptureScreen, PhotoWalkthroughScreen, UnifiedCheckInFlow } from "../screens/tracking";
 import { useThemeContext } from "../theme/ThemeContext";
 
+import {
+    CompleteStep,
+    DateOfBirthStep,
+    GenderStep,
+    GoalsStep,
+    NotificationsStep,
+    OnboardingFlow,
+    PhotoPermissionsStep,
+    PrimaryConcernsStep,
+    SkinTypeStep,
+    WelcomeStep
+} from "../screens/onboarding";
+
 export default function Index() {
   const { theme } = useThemeContext();
   const { signOut } = useAuthActions();
-  const { isOnboardingComplete, isLoading: onboardingLoading, markOnboardingComplete, resetOnboarding } = useProfile();
+  const { isLoading: storeUserLoading, isAuthenticated } = useStoreUserEffect();
+  const { profile, isOnboardingComplete, isLoading: onboardingLoading, markOnboardingComplete, resetOnboarding } = useProfile();
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showTestSelection, setShowTestSelection] = useState(false);
@@ -40,14 +43,6 @@ export default function Index() {
   const [showUnifiedCheckIn, setShowUnifiedCheckIn] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const insets = useSafeAreaInsets();
-
-  // Get user profile to access userId
-  const userProfile = useQuery(api.userProfiles.getProfile);
-  
-  // Get the active test for the current user
-  const activeTest = useQuery(api.tests.getActiveTest, 
-    userProfile?.userId ? { userId: userProfile.userId } : "skip"
-  );
 
 
 
@@ -99,12 +94,8 @@ export default function Index() {
   };
 
   const handleStartUnifiedCheckIn = () => {
-    if (activeTest) {
-      setShowUnifiedCheckIn(true);
-    } else {
-      // No active test, show test selection
-      setShowTestSelection(true);
-    }
+    // TODO: Implement unified check-in
+    setShowUnifiedCheckIn(true);
   };
 
   const handleUnifiedCheckInComplete = () => {
@@ -127,7 +118,17 @@ export default function Index() {
     setShowTestSelection(false);
   };
 
-
+  const onboardingSteps = [
+    { id: 'welcome', title: 'Welcome to DermaTrack', component: WelcomeStep },
+    { id: 'gender', title: 'About You', component: GenderStep },
+    { id: 'dateOfBirth', title: 'Your Age', component: DateOfBirthStep },
+    { id: 'skinType', title: 'Acne-Prone Skin Type', component: SkinTypeStep },
+    { id: 'primaryConcerns', title: 'Acne Concerns', component: PrimaryConcernsStep },
+    { id: 'photoPermissions', title: 'Track Progress', component: PhotoPermissionsStep },
+    { id: 'notifications', title: 'Reminders', component: NotificationsStep },
+    { id: 'goals', title: 'Acne Goals', component: GoalsStep },
+    { id: 'complete', title: 'Ready to Start', component: CompleteStep },
+  ];
 
   const handleViewAllCheckIns = () => {
     setShowCheckInHistory(true);
@@ -164,7 +165,7 @@ export default function Index() {
             onViewAllCheckIns={handleViewAllCheckIns}
           />
         );
-      case 'profile':
+            case 'profile':
         return (
           <Box flex={1} padding="l">
             <Box marginBottom="xl">
@@ -175,6 +176,8 @@ export default function Index() {
                 Manage your account and settings
               </Text>
             </Box>
+
+            
 
             <Box 
               backgroundColor="backgroundMuted" 
@@ -222,34 +225,15 @@ export default function Index() {
               <Text variant="subtitle" color="white">Sign Out</Text>
             </TouchableOpacity>
           </Box>
-      );
+        );
       default:
         return <DashboardScreen />;
     }
   };
 
-  console.log('🔍 Step components check:');
-  console.log('WelcomeStep:', WelcomeStep);
-  console.log('GenderStep:', GenderStep);
-  console.log('DateOfBirthStep:', DateOfBirthStep);
-  console.log('SkinTypeStep:', SkinTypeStep);
-  console.log('PrimaryConcernsStep:', PrimaryConcernsStep);
-  console.log('PhotoPermissionsStep:', PhotoPermissionsStep);
-  console.log('NotificationsStep:', NotificationsStep);
-  console.log('GoalsStep:', GoalsStep);
-  console.log('CompleteStep:', CompleteStep);
 
-  const onboardingSteps = [
-    { id: 'welcome', title: 'Welcome to DermaTrack', component: WelcomeStep },
-    { id: 'gender', title: 'About You', component: GenderStep },
-    { id: 'dateOfBirth', title: 'Your Age', component: DateOfBirthStep },
-    { id: 'skinType', title: 'Acne-Prone Skin Type', component: SkinTypeStep },
-    { id: 'primaryConcerns', title: 'Acne Concerns', component: PrimaryConcernsStep },
-    { id: 'photoPermissions', title: 'Track Progress', component: PhotoPermissionsStep },
-    { id: 'notifications', title: 'Reminders', component: NotificationsStep },
-    { id: 'goals', title: 'Acne Goals', component: GoalsStep },
-    { id: 'complete', title: 'Ready to Start', component: CompleteStep },
-  ];
+
+
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -278,7 +262,7 @@ export default function Index() {
           </Unauthenticated>
           
           <Authenticated>
-            {onboardingLoading ? (
+            {storeUserLoading || onboardingLoading ? (
               <Box flex={1} justifyContent="center" alignItems="center">
                 <Text variant="title" color="textPrimary">Loading...</Text>
               </Box>
@@ -295,18 +279,24 @@ export default function Index() {
                   <ImageCaptureScreen
                     onPhotoTaken={handlePhotoTaken}
                     onBack={handleBackFromPhoto}
-                    userId={userProfile?.userId}
+                    userId={profile?._id}
                   />
                 </View>
               ) : showUnifiedCheckIn ? (
-                <View style={{ flex: 1 }}>
-                  <UnifiedCheckInFlow
-                    test={activeTest || undefined}
-                    userId={userProfile?.userId || ''}
-                    onComplete={handleUnifiedCheckInComplete}
-                    onCancel={handleUnifiedCheckInCancel}
-                  />
-                </View>
+                profile?._id ? (
+                  <View style={{ flex: 1 }}>
+                    <UnifiedCheckInFlow
+                      test={undefined}
+                      userId={profile._id}
+                      onComplete={handleUnifiedCheckInComplete}
+                      onCancel={handleUnifiedCheckInCancel}
+                    />
+                  </View>
+                ) : (
+                  <Box flex={1} justifyContent="center" alignItems="center">
+                    <Text variant="title" color="textPrimary">Loading profile...</Text>
+                  </Box>
+                )
               ) : (
                 <View style={{ flex: 1 }}>
                   {renderTabContent()}

@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 // Check-in mutations and queries
 export const createCheckIn = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     testId: v.optional(v.id("tests")),
     leftPhotoId: v.optional(v.id("photos")),
     centerPhotoId: v.optional(v.id("photos")),
@@ -34,7 +34,7 @@ export const createCheckIn = mutation({
 // Create a check-in with test answers in one operation
 export const createCheckInWithTestAnswers = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     testId: v.id("tests"),
     leftPhotoId: v.optional(v.id("photos")),
     centerPhotoId: v.optional(v.id("photos")),
@@ -114,7 +114,7 @@ export const createCheckInWithTestAnswers = mutation({
 });
 
 export const getCheckInsByUser = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("checkIns")
@@ -125,7 +125,7 @@ export const getCheckInsByUser = query({
 });
 
 export const getRecentCheckIns = query({
-  args: { userId: v.string(), limit: v.optional(v.number()) },
+  args: { userId: v.id("users"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const limit = args.limit || 7;
     return await ctx.db
@@ -138,7 +138,7 @@ export const getRecentCheckIns = query({
 
 // Get check-ins with their associated test answers and test details
 export const getCheckInsWithTestAnswers = query({
-  args: { userId: v.string(), limit: v.optional(v.number()) },
+  args: { userId: v.id("users"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
     const checkIns = await ctx.db

@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 // Test mutations and queries
 export const createTest = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     name: v.string(),
     description: v.optional(v.string()),
     duration: v.number(), // Test duration in days
@@ -43,7 +43,7 @@ export const createTest = mutation({
 });
 
 export const getTestsByUser = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("tests")
@@ -54,7 +54,7 @@ export const getTestsByUser = query({
 });
 
 export const getActiveTest = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("tests")
@@ -135,7 +135,7 @@ export const getTestTemplates = query({
 
 export const createTestFromTemplate = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     templateId: v.id("testTemplates"),
     customName: v.optional(v.string()), // Allow user to customize the name
     customDescription: v.optional(v.string()), // Allow user to customize the description

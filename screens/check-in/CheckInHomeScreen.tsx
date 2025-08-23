@@ -4,7 +4,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { Box, Button, Text } from '../../components';
 import { api } from '../../convex/_generated/api';
-import { useProfile, useUserPhotos } from '../../hooks/useProfile';
+import { useProfile } from '../../hooks/useProfile';
 import { useThemeContext } from '../../theme/ThemeContext';
 
 interface CheckInHomeScreenProps {
@@ -15,7 +15,7 @@ interface CheckInHomeScreenProps {
 export default function CheckInHomeScreen({ onStartCheckIn, onViewAllCheckIns }: CheckInHomeScreenProps) {
   const { theme } = useThemeContext();
   const { profile } = useProfile();
-  const { userId } = useUserPhotos();
+  const userId = profile?._id;
   
   // Fetch recent check-ins to determine today's status
   const recentCheckIns = useQuery(api.checkIns.getRecentCheckIns, 

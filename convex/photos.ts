@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 // Generate a Convex storage upload URL for photos
@@ -23,20 +24,73 @@ export const savePhoto = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    console.log('🔍 savePhoto: Starting mutation with args:', {
+      storageId: args.storageId,
+      photoType: args.photoType,
+      sessionId: args.sessionId,
+      userId: args.userId,
+      userIdType: typeof args.userId
+    });
+
     const identity = await ctx.auth.getUserIdentity();
+    console.log('🔍 savePhoto: Authentication identity:', {
+      hasIdentity: !!identity,
+      identitySubject: identity?.subject,
+      identityEmail: identity?.email,
+      identityName: identity?.name
+    });
+
     if (!identity) {
+      console.error('❌ savePhoto: No authentication identity found');
       throw new Error("Not authenticated");
     }
 
+    // Extract the user ID from the subject (first part before the first |)
+    const extractedUserId = identity.subject.split('|')[0];
+    console.log('🔍 savePhoto: Extracted user ID from identity:', {
+      fullSubject: identity.subject,
+      extractedUserId,
+      extractedUserIdType: typeof extractedUserId
+    });
+
     // Verify the user owns this userId
-    const user = await ctx.db
-      .query("users")
-      .withIndex("email", (q) => q.eq("email", identity.email))
-      .first();
+    const user = await ctx.db.get(extractedUserId as Id<"users">);
+
+    console.log('🔍 savePhoto: Database user lookup result:', {
+      hasUser: !!user,
+      userFromDb: user ? {
+        _id: user._id,
+        email: user.email,
+        name: user.name
+      } : null,
+      searchedUserId: extractedUserId
+    });
+
+    if (!user) {
+      console.error('❌ savePhoto: User not found in database for email:', identity.email);
+      throw new Error("User not found");
+    }
+
+    console.log('🔍 savePhoto: User ID comparison:', {
+      argsUserId: args.userId,
+      argsUserIdType: typeof args.userId,
+      userFromDbId: user._id,
+      userFromDbIdType: typeof user._id,
+      areEqual: user._id === args.userId,
+      comparisonResult: user._id !== args.userId
+    });
 
     if (!user || user._id !== args.userId) {
+      console.error('❌ savePhoto: Unauthorized - User ID mismatch:', {
+        argsUserId: args.userId,
+        userFromDbId: user._id,
+        identitySubject: identity.subject,
+        extractedUserId
+      });
       throw new Error("Unauthorized");
     }
+
+    console.log('✅ savePhoto: Authorization successful, inserting photo...');
     
     const photoId = await ctx.db.insert("photos", {
       userId: args.userId,
@@ -45,6 +99,8 @@ export const savePhoto = mutation({
       sessionId: args.sessionId,
       createdAt: Date.now(),
     });
+
+    console.log('✅ savePhoto: Photo saved successfully with ID:', photoId);
     
     return photoId;
   },

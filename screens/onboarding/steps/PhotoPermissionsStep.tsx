@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Box, Text } from '../../../components';
-import { OnboardingButton } from '../../../components/onboarding';
+import { Button } from '../../../components/ui/buttons/Button';
 import { Profile } from '../../../hooks/useProfile';
 import { useThemeContext } from '../../../theme/ThemeContext';
 
@@ -233,21 +233,27 @@ export function PhotoPermissionsStep({
         }}>
           {!isFirstStep && (
             <View style={{ flex: 1, marginRight: theme.spacing.s }}>
-              <OnboardingButton
-                title="Back"
+              <Button
+                variant="glass"
+                size="medium"
+                style={{ width: '100%' }}
                 onPress={onPrevious}
-                variant="secondary"
-              />
+              >
+                Back
+              </Button>
             </View>
           )}
           
           <View style={{ flex: 1, marginLeft: isFirstStep ? 0 : theme.spacing.s }}>
-            <OnboardingButton
-              title={isLastStep ? "Get Started" : "Next"}
+            <Button
+              variant="glass"
+              size="medium"
+              style={{ width: '100%' }}
               onPress={onNext}
-              variant="primary"
               disabled={!canProceed}
-            />
+            >
+              {isLastStep ? "Get Started" : "Next"}
+            </Button>
           </View>
         </View>
       </Box>

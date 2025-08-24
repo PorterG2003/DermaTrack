@@ -1,194 +1,145 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { View } from 'react-native';
-import { Box, Text } from '../../../components';
-import { OnboardingButton } from '../../../components/onboarding';
-import { Profile } from '../../../hooks/useProfile';
+import { StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../../components/ui/buttons/Button';
+import { Container } from '../../../components/ui/layout/Container';
+import { Spacer } from '../../../components/ui/layout/Spacer';
 import { useThemeContext } from '../../../theme/ThemeContext';
+import { OnboardingData } from '../OnboardingFlow';
 
 interface CompleteStepProps {
-  step: any;
-  currentIndex: number;
-  totalSteps: number;
-  onNext: () => void;
-  onPrevious: () => void;
-  onGoToStep: (index: number) => void;
+  data: OnboardingData;
+  onNext: (data: Partial<OnboardingData>) => void;
+  onBack: () => void;
   isFirstStep: boolean;
   isLastStep: boolean;
-  profile: Profile;
-  updateProfile: (data: Partial<Profile>) => Promise<void>;
 }
 
-export function CompleteStep({
-  onNext,
-  onPrevious,
-  isFirstStep,
-  isLastStep,
-  profile,
-  updateProfile
+export function CompleteStep({ 
+  data, 
+  onNext, 
+  onBack, 
+  isFirstStep, 
+  isLastStep 
 }: CompleteStepProps) {
   const { theme } = useThemeContext();
-  
-  // Complete step always allows proceeding
-  const canProceed = true;
-  
+
+  const handleComplete = () => {
+    onNext({}); // No additional data needed for completion
+  };
+
   return (
-    <View style={{ 
-      flex: 1, 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      padding: theme.spacing.l,
-      paddingTop: theme.spacing.xl,
-      width: '100%'
-    }}>
-      {/* Celebration Icon */}
-      <View style={{
-        width: 140,
-        height: 140,
-        borderRadius: theme.borderRadii.xl,
-        backgroundColor: theme.colors.primary,
-        borderWidth: 1,
-        borderColor: theme.colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: theme.spacing.xl,
-        shadowColor: theme.colors.primary,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
-        elevation: 8,
-      }}>
-        <Text variant="title" color="white" fontSize={64} height={140} lineHeight={140}>
-          🎉
-        </Text>
-      </View>
-      
-      {/* Completion Title */}
-      <Text 
-        variant="heading" 
-        color="textPrimary" 
-        textAlign="center"
-        marginBottom="m"
-      >
-        You're All Set!
-      </Text>
-      
-      {/* Completion Subtitle */}
-      <Text 
-        variant="subtitle" 
-        color="textSecondary" 
-        textAlign="center"
-        marginBottom="xl"
-        paddingHorizontal="l"
-      >
-        Welcome to DermaTrack! Your personalized acne treatment journey is ready to begin.
-      </Text>
-      
-      {/* What's Next */}
-      <View style={{
-        backgroundColor: theme.colors.backgroundMuted,
-        borderRadius: theme.borderRadii.l,
-        padding: theme.spacing.l,
-        marginBottom: theme.spacing.xl,
-        borderWidth: 1,
-        borderColor: theme.colors.glassBorder,
-        width: '100%',
-        maxWidth: '90%'
-      }}>
-        <Text 
-          variant="subtitle" 
-          color="textPrimary" 
-          textAlign="center"
-          marginBottom="m"
-        >
-          What's Next:
-        </Text>
-        
-        <View style={{ marginBottom: theme.spacing.s }}>
-          <Box flexDirection="row" alignItems="center" justifyContent="center">
-            <Ionicons name="camera" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              Take your first acne photo to start tracking
+    <Container>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+            🎉 Onboarding Complete!
+          </Text>
+          
+          <Spacer size="m" />
+          
+          <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
+            Thank you for providing such detailed information about your skin and lifestyle. This comprehensive data will help us provide you with personalized insights and recommendations.
+          </Text>
+
+          <Spacer size="l" />
+
+          <View style={[styles.summaryCard, { backgroundColor: theme.colors.backgroundMuted }]}>
+            <Text style={[styles.summaryTitle, { color: theme.colors.textPrimary }]}>
+              What we've collected:
             </Text>
-          </Box>
+            
+            <Spacer size="s" />
+            
+            <Text style={[styles.summaryText, { color: theme.colors.textSecondary }]}>
+              • Hormonal & medical context{'\n'}
+              • Symptom patterns and breakout locations{'\n'}
+              • Skin behavior and responses{'\n'}
+              • Lifestyle factors and daily habits{'\n'}
+              • Diet and nutrition patterns{'\n'}
+              • Medications and supplements{'\n'}
+              • Routine products and ingredients
+            </Text>
+          </View>
+
+          <Spacer size="l" />
+
+          <Text style={[styles.nextSteps, { color: theme.colors.textSecondary }]}>
+            You're now ready to start tracking your skin progress and receiving personalized insights!
+          </Text>
         </View>
-        
-        <View style={{ marginBottom: theme.spacing.s }}>
-          <Box flexDirection="row" alignItems="center" justifyContent="center">
-            <Ionicons name="analytics" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              View your personalized acne dashboard
-            </Text>
-          </Box>
-        </View>
-        
-        <View style={{ marginBottom: theme.spacing.s }}>
-          <Box flexDirection="row" alignItems="center" justifyContent="center">
-            <Ionicons name="notifications" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              Set up your first tracking reminder
-            </Text>
-          </Box>
-        </View>
-        
-        <View>
-          <Box flexDirection="row" alignItems="center" justifyContent="center">
-            <Ionicons name="phone-portrait" size={14} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
-            <Text variant="caption" color="textSecondary" textAlign="center">
-              Start building your clear skin routine
-            </Text>
-          </Box>
+
+        <View style={styles.navigationContainer}>
+          <Button
+            variant="glass"
+            size="medium"
+            style={{ flex: 1 }}
+            onPress={onBack}
+          >
+            Back
+          </Button>
+          
+          <Spacer size="m" />
+          
+          <Button
+            variant="glass"
+            size="medium"
+            style={{ flex: 1 }}
+            onPress={handleComplete}
+          >
+            Complete Setup
+          </Button>
         </View>
       </View>
-      
-      {/* Tip Card */}
-      <View style={{
-        backgroundColor: theme.colors.backgroundMuted,
-        borderRadius: theme.borderRadii.m,
-        padding: theme.spacing.m,
-        borderWidth: 1,
-        borderColor: theme.colors.glassBorder,
-        width: '100%',
-        maxWidth: '90%',
-        marginBottom: theme.spacing.xl
-      }}>
-        <Text 
-          variant="caption" 
-          color="textSecondary" 
-          textAlign="center"
-        >
-          Tip: Take photos in consistent lighting to track your acne progress accurately.
-        </Text>
-      </View>
-      
-      {/* Main Action Button */}
-      <View style={{
-        width: '100%',
-        paddingHorizontal: theme.spacing.l,
-        marginTop: theme.spacing.xl
-      }}>
-        <OnboardingButton
-          title="Take Your First Progress Photos"
-          onPress={onNext}
-          variant="primary"
-          disabled={!canProceed}
-        />
-      </View>
-      
-      {/* Back Button Only */}
-      {!isFirstStep && (
-        <View style={{
-          width: '100%',
-          paddingHorizontal: theme.spacing.l,
-          marginTop: theme.spacing.m
-        }}>
-          <OnboardingButton
-            title="Back"
-            onPress={onPrevious}
-            variant="secondary"
-          />
-        </View>
-      )}
-    </View>
+    </Container>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 40,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 16,
+  },
+  summaryCard: {
+    padding: 20,
+    borderRadius: 16,
+    width: '100%',
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  summaryText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  nextSteps: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 16,
+  },
+  navigationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+  },
+});

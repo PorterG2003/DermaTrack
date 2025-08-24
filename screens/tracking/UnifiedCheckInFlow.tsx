@@ -8,6 +8,7 @@ import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { useAISummarization } from '../../hooks/useAISummarization';
 import { useProfile } from '../../hooks/useProfile';
+import { useUserSignals } from '../../hooks/useUserSignals';
 import { useThemeContext } from '../../theme/ThemeContext';
 import { TestQuestionsFlow } from '../test-questions/TestQuestionsFlow';
 import { ImageCaptureScreen } from './ImageCaptureScreen';
@@ -62,6 +63,7 @@ export function UnifiedCheckInFlow({ test, userId, onComplete, onCancel }: Unifi
   
   // User profile for AI summarization context
   const { profile } = useProfile();
+  const { signals } = useUserSignals();
 
   // Animate loading dots when AI summarization is happening
   useEffect(() => {
@@ -134,10 +136,19 @@ export function UnifiedCheckInFlow({ test, userId, onComplete, onCancel }: Unifi
             const summarizationData = {
               testName: test.name,
               testDescription: test.description,
-              userProfile: {
-                skinType: profile?.skinType,
-                primaryConcerns: profile?.primaryConcerns,
-                goals: profile?.goals,
+              userSignals: {
+                areasAffected: signals?.areasAffected,
+                itchy: signals?.itchy,
+                allBumpsLookSame: signals?.allBumpsLookSame,
+                comedonesPresent: signals?.comedonesPresent,
+                middayShineTzone: signals?.middayShineTzone,
+                middayShineCheeks: signals?.middayShineCheeks,
+                feelsTightAfterCleanse: signals?.feelsTightAfterCleanse,
+                visibleFlakingDaysPerWeek: signals?.visibleFlakingDaysPerWeek,
+                usesMoisturizerDaily: signals?.usesMoisturizerDaily,
+                usesSunscreenDaily: signals?.usesSunscreenDaily,
+                hotHumidExposure: signals?.hotHumidExposure,
+                stressNow_0to10: signals?.stressNow_0to10,
               },
               answers: answers.map((answer, index) => {
                 const question = test.formStructure.questions.find(q => q.id === answer.questionId);

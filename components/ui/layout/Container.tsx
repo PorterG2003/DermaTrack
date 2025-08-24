@@ -27,6 +27,7 @@ export function Container({
   const getContainerStyles = (): ViewStyle => {
     const baseStyles: ViewStyle = {
       width: fullWidth ? '100%' : 'auto',
+      flex: 1, // Keep flex: 1 for proper layout
     };
 
     // Size variants

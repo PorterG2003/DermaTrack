@@ -3,7 +3,7 @@ import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useRef, useState } from 'react';
 import { Alert, Dimensions, Image, TouchableOpacity, View } from 'react-native';
 import { FaceSilhouette, Text } from '../../components';
-import { OnboardingButton } from '../../components/onboarding';
+import { Button } from '../../components/ui/buttons/Button';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { useThemeContext } from '../../theme/ThemeContext';
@@ -24,6 +24,13 @@ export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, use
   const [isReviewing, setIsReviewing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [photoIds, setPhotoIds] = useState<{ leftPhotoId?: Id<"photos">; centerPhotoId?: Id<"photos">; rightPhotoId?: Id<"photos"> }>({});
+  
+  // Log the userId prop for debugging
+  console.log('🔍 ImageCaptureScreen: Received userId prop:', {
+    userId,
+    userIdType: typeof userId,
+    hasUserId: !!userId
+  });
   
   // Camera ref for taking photos
   const cameraRef = useRef<CameraView>(null);
@@ -97,6 +104,14 @@ export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, use
       const { storageId } = await uploadResult.json();
       
       // Step 3: Save photo reference to database
+      console.log('🔍 ImageCaptureScreen: About to call savePhoto with:', {
+        storageId,
+        photoType: currentPhotoStep,
+        sessionId,
+        userId,
+        userIdType: typeof userId
+      });
+      
       const photoId = await savePhoto({
         storageId,
         photoType: currentPhotoStep,
@@ -104,7 +119,7 @@ export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, use
         userId,
       });
       
-      console.log('Photo saved successfully:', { photoId, photoType: currentPhotoStep });
+      console.log('✅ ImageCaptureScreen: Photo saved successfully:', { photoId, photoType: currentPhotoStep });
       
       // Store the photo ID
       setPhotoIds(prev => ({
@@ -197,11 +212,14 @@ export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, use
         <Text variant="subtitle" color="textSecondary" textAlign="center" marginBottom="xl">
           DermaTrack needs camera access to help you track your acne progress. Please enable it in your device settings.
         </Text>
-        <OnboardingButton
-          title="Grant Permission"
+        <Button
+          variant="glass"
+          size="medium"
+          style={{ width: '100%' }}
           onPress={requestPermission}
-          variant="primary"
-        />
+        >
+          Grant Permission
+        </Button>
       </View>
     );
   }
@@ -270,21 +288,26 @@ export function ImageCaptureScreen({ onPhotoTaken, onPhotosComplete, onBack, use
             width: '90%',
           }}>
             <View style={{ flex: 1 }}>
-              <OnboardingButton
-                title="Retake"
+              <Button
+                variant="glass"
+                size="medium"
+                style={{ width: '100%' }}
                 onPress={retakePhoto}
-                variant="secondary"
                 disabled={isUploading}
-              />
+              >
+                Retake
+              </Button>
             </View>
             <View style={{ flex: 1 }}>
-              <OnboardingButton
-                title={currentPhotoStep === 'right' ? 'Finish' : 'Next Photo'}
+              <Button
+                variant="glass"
+                size="medium"
+                style={{ width: '100%' }}
                 onPress={confirmPhoto}
-                variant="primary"
                 disabled={isUploading}
-                loading={isUploading}
-              />
+              >
+                {currentPhotoStep === 'right' ? 'Finish' : 'Next Photo'}
+              </Button>
             </View>
           </View>
         </View>

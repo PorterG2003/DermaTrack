@@ -18,20 +18,11 @@ import { CheckInHistoryScreen, CheckInHomeScreen } from "../screens/check-in";
 import { ImageCaptureScreen, PhotoWalkthroughScreen, UnifiedCheckInFlow } from "../screens/tracking";
 import { useThemeContext } from "../theme/ThemeContext";
 
-import {
-    CompleteStep,
-    DateOfBirthStep,
-    GenderStep,
-    GoalsStep,
-    NotificationsStep,
-    OnboardingFlow,
-    PhotoPermissionsStep,
-    PrimaryConcernsStep,
-    SkinTypeStep,
-    WelcomeStep
-} from "../screens/onboarding";
+import { OnboardingFlow } from "../screens/onboarding";
 
 export default function Index() {
+  console.log('🚀 Index: Component initialized');
+  
   const { theme } = useThemeContext();
   const { signOut } = useAuthActions();
   const { isLoading: storeUserLoading, isAuthenticated } = useStoreUserEffect();
@@ -44,104 +35,132 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const insets = useSafeAreaInsets();
 
+  console.log('🔍 Index: Hooks initialized', {
+    hasTheme: !!theme,
+    hasSignOut: !!signOut,
+    storeUserLoading,
+    isAuthenticated,
+    hasProfile: !!profile,
+    profileId: profile?._id,
+    isOnboardingComplete,
+    onboardingLoading,
+    hasMarkOnboardingComplete: !!markOnboardingComplete,
+    hasResetOnboarding: !!resetOnboarding
+  });
 
+  console.log('📱 Index: State values', {
+    showPhotoCapture,
+    showWalkthrough,
+    showTestSelection,
+    showCheckInHistory,
+    showUnifiedCheckIn,
+    activeTab
+  });
 
   const handleSignOut = async () => {
+    console.log('🚪 Index: handleSignOut called');
     try {
       await signOut();
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error('❌ Index: Sign out error:', error);
     }
   };
 
   const handleResetOnboarding = async () => {
+    console.log('🔄 Index: handleResetOnboarding called');
     await resetOnboarding();
     setShowPhotoCapture(false);
     setShowWalkthrough(false);
   };
 
   const handleOnboardingComplete = async () => {
+    console.log('✅ Index: handleOnboardingComplete called');
     await markOnboardingComplete();
     setShowWalkthrough(true);
   };
 
   const handleStartPhotoCapture = () => {
+    console.log('📸 Index: handleStartPhotoCapture called');
     setShowWalkthrough(false);
     setShowPhotoCapture(true);
   };
 
   const handlePhotoTaken = (photoUri: string) => {
+    console.log('📷 Index: handlePhotoTaken called', { photoUri });
     if (photoUri === 'all-photos-complete') {
       // All photos taken, show success message
-      console.log('All progress photos completed!');
+      console.log('🎉 Index: All progress photos completed!');
       setShowPhotoCapture(false);
     } else {
       // Individual photo taken
-      console.log('Photo taken:', photoUri);
+      console.log('📷 Index: Photo taken:', photoUri);
     }
   };
 
   const handleBackFromPhoto = () => {
+    console.log('⬅️ Index: handleBackFromPhoto called');
     setShowPhotoCapture(false);
   };
 
   const handleBackFromWalkthrough = () => {
+    console.log('⬅️ Index: handleBackFromWalkthrough called');
     setShowWalkthrough(false);
   };
 
   const handleStartTest = () => {
+    console.log('🧪 Index: handleStartTest called');
     setShowTestSelection(true);
   };
 
   const handleStartUnifiedCheckIn = () => {
+    console.log('🔍 Index: handleStartUnifiedCheckIn called');
     // TODO: Implement unified check-in
     setShowUnifiedCheckIn(true);
   };
 
   const handleUnifiedCheckInComplete = () => {
+    console.log('✅ Index: handleUnifiedCheckInComplete called');
     setShowUnifiedCheckIn(false);
     // TODO: Show success message or refresh dashboard
   };
 
   const handleUnifiedCheckInCancel = () => {
+    console.log('❌ Index: handleUnifiedCheckInCancel called');
     setShowUnifiedCheckIn(false);
   };
 
   const handleTestCreated = (testId: string) => {
+    console.log('🧪 Index: handleTestCreated called', { testId });
     setShowTestSelection(false);
     // Test created successfully, start the unified check-in flow
-    console.log('Test created with ID:', testId);
+    console.log('🎯 Index: Test created with ID:', testId);
     setShowUnifiedCheckIn(true);
   };
 
   const handleBackFromTestSelection = () => {
+    console.log('⬅️ Index: handleBackFromTestSelection called');
     setShowTestSelection(false);
   };
 
-  const onboardingSteps = [
-    { id: 'welcome', title: 'Welcome to DermaTrack', component: WelcomeStep },
-    { id: 'gender', title: 'About You', component: GenderStep },
-    { id: 'dateOfBirth', title: 'Your Age', component: DateOfBirthStep },
-    { id: 'skinType', title: 'Acne-Prone Skin Type', component: SkinTypeStep },
-    { id: 'primaryConcerns', title: 'Acne Concerns', component: PrimaryConcernsStep },
-    { id: 'photoPermissions', title: 'Track Progress', component: PhotoPermissionsStep },
-    { id: 'notifications', title: 'Reminders', component: NotificationsStep },
-    { id: 'goals', title: 'Acne Goals', component: GoalsStep },
-    { id: 'complete', title: 'Ready to Start', component: CompleteStep },
-  ];
+
 
   const handleViewAllCheckIns = () => {
+    console.log('📋 Index: handleViewAllCheckIns called');
     setShowCheckInHistory(true);
   };
 
   const handleBackFromCheckInHistory = () => {
+    console.log('⬅️ Index: handleBackFromCheckInHistory called');
     setShowCheckInHistory(false);
   };
 
   const renderTabContent = () => {
+    console.log('🎭 Index: renderTabContent called', { activeTab });
+    
     switch (activeTab) {
       case 'dashboard':
         if (showTestSelection) {
+          console.log('🧪 Index: Rendering TestSelectionScreen');
           return (
             <TestSelectionScreen
               onTestCreated={handleTestCreated}
@@ -150,15 +169,18 @@ export default function Index() {
             />
           );
         }
+        console.log('🏠 Index: Rendering DashboardScreen');
         return <DashboardScreen onStartTest={handleStartTest} onStartUnifiedCheckIn={handleStartUnifiedCheckIn} />;
       case 'check-in':
         if (showCheckInHistory) {
+          console.log('📋 Index: Rendering CheckInHistoryScreen');
           return (
             <CheckInHistoryScreen 
               onBack={handleBackFromCheckInHistory}
             />
           );
         }
+        console.log('🔍 Index: Rendering CheckInHomeScreen');
         return (
           <CheckInHomeScreen 
             onStartCheckIn={handleStartUnifiedCheckIn}
@@ -166,6 +188,7 @@ export default function Index() {
           />
         );
             case 'profile':
+        console.log('👤 Index: Rendering Profile tab');
         return (
           <Box flex={1} padding="l">
             <Box marginBottom="xl">
@@ -227,13 +250,33 @@ export default function Index() {
           </Box>
         );
       default:
+        console.log('🏠 Index: Rendering default DashboardScreen');
         return <DashboardScreen />;
     }
   };
 
+  console.log('🎯 Index: About to render main UI', {
+    storeUserLoading,
+    onboardingLoading,
+    isOnboardingComplete,
+    showWalkthrough,
+    showPhotoCapture,
+    showUnifiedCheckIn
+  });
 
+  // Debug: Check what the render logic decides
+  if (storeUserLoading || onboardingLoading) {
+    console.log('📱 Index: RENDERING LOADING SCREEN');
+  } else if (isOnboardingComplete) {
+    console.log('📱 Index: RENDERING POST-ONBOARDING CONTENT');
+  } else {
+    console.log('📱 Index: RENDERING ONBOARDING FLOW');
+  }
 
-
+  console.log('🎨 Index: Background color', {
+    backgroundColor: theme.colors.background,
+    gradientColors: theme.gradients.background.colors.slice(0, 3)
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -305,7 +348,6 @@ export default function Index() {
             ) : (
               <View style={{ flex: 1 }}>
                 <OnboardingFlow 
-                  steps={onboardingSteps} 
                   onComplete={handleOnboardingComplete} 
                 />
               </View>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { FaceSilhouette, StepIcon, Text } from '../../components';
-import { OnboardingButton } from '../../components/onboarding';
+import { Button } from '../../components/ui/buttons/Button';
 import { useThemeContext } from '../../theme/ThemeContext';
 
 interface PhotoWalkthroughScreenProps {
@@ -202,21 +202,27 @@ export function PhotoWalkthroughScreen({ onStart, onBack }: PhotoWalkthroughScre
           {/* Back Button */}
           {!isFirstStep && (
             <View style={{ flex: 1 }}>
-              <OnboardingButton
-                title="Previous"
+              <Button
+                variant="glass"
+                size="medium"
+                style={{ width: '100%' }}
                 onPress={previousStep}
-                variant="secondary"
-              />
+              >
+                Previous
+              </Button>
             </View>
           )}
 
           {/* Next/Start Button */}
           <View style={{ flex: 1 }}>
-            <OnboardingButton
-              title={isLastStep ? "Start Taking Photos" : "Next"}
+            <Button
+              variant="glass"
+              size="medium"
+              style={{ width: '100%' }}
               onPress={isLastStep ? onStart : nextStep}
-              variant="primary"
-            />
+            >
+              {isLastStep ? "Start Taking Photos" : "Next"}
+            </Button>
           </View>
         </View>
       </View>

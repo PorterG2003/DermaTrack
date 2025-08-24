@@ -46,16 +46,45 @@ export const storeUser = mutation({
 export const getProfile = query({
   args: {},
   handler: async (ctx) => {
+    console.log('🔍 getProfile: Query started');
+    
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    console.log('🔍 getProfile: Authentication identity:', {
+      hasIdentity: !!identity,
+      identitySubject: identity?.subject,
+      identityEmail: identity?.email,
+      identityName: identity?.name
+    });
+    
+    if (!identity) {
+      console.log('❌ getProfile: No authentication identity found');
+      return null;
+    }
 
     // Extract the user ID from the subject (first part before the first |)
     const userId = identity.subject.split('|')[0];
+    console.log('🔍 getProfile: Extracted user ID from identity:', {
+      fullSubject: identity.subject,
+      extractedUserId: userId,
+      extractedUserIdType: typeof userId
+    });
 
     // Get the user from Convex Auth's built-in users table
     const user = await ctx.db.get(userId as Id<"users">);
+    console.log('🔍 getProfile: Built-in user lookup result:', {
+      hasUser: !!user,
+      userFromDb: user ? {
+        _id: user._id,
+        email: user.email,
+        name: user.name
+      } : null,
+      searchedUserId: userId
+    });
 
-    if (!user) return null;
+    if (!user) {
+      console.log('❌ getProfile: User not found in built-in users table');
+      return null;
+    }
 
     // Get the user's profile
     const profile = await ctx.db
@@ -63,16 +92,38 @@ export const getProfile = query({
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .first();
 
-    if (!profile) return null;
+    console.log('🔍 getProfile: User profile lookup result:', {
+      hasProfile: !!profile,
+      profileFromDb: profile ? {
+        _id: profile._id,
+        userId: profile.userId,
+        onboardingCompleted: profile.onboardingCompleted
+      } : null,
+      searchedUserId: user._id
+    });
+
+    if (!profile) {
+      console.log('❌ getProfile: User profile not found');
+      return null;
+    }
 
     // Return combined data
-    return {
+    const result = {
       ...profile,
       _id: user._id, // Use the built-in user ID for compatibility
       name: user.name,
       email: user.email,
       image: user.image,
     };
+    
+    console.log('✅ getProfile: Returning combined profile data:', {
+      finalId: result._id,
+      finalIdType: typeof result._id,
+      profileUserId: result.userId,
+      profileUserIdType: typeof result.userId
+    });
+    
+    return result;
   },
 });
 
@@ -81,28 +132,6 @@ export const updateProfile = mutation({
   args: {
     gender: v.optional(v.union(v.literal("male"), v.literal("female"))),
     dateOfBirth: v.optional(v.number()),
-    skinType: v.optional(v.union(
-      v.literal("oily"), 
-      v.literal("dry"), 
-      v.literal("combination"), 
-      v.literal("normal"), 
-      v.literal("sensitive")
-    )),
-    primaryConcerns: v.optional(v.array(v.union(
-      v.literal("acne"), 
-      v.literal("blackheads"), 
-      v.literal("whiteheads"), 
-      v.literal("cysticAcne"), 
-      v.literal("acneScars"), 
-      v.literal("acneMarks")
-    ))),
-    goals: v.optional(v.array(v.union(
-      v.literal("clearAcne"), 
-      v.literal("preventBreakouts"), 
-      v.literal("reduceScars"), 
-      v.literal("buildRoutine"), 
-      v.literal("trackProgress")
-    ))),
     cameraPermission: v.optional(v.boolean()),
     notificationPreference: v.optional(v.union(
       v.literal("daily"), 

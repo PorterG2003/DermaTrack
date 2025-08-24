@@ -48,6 +48,7 @@ export function GlassCard({
                     // Inner highlight border (top-left) for liquid-glass effect
                     borderTopColor: theme.colors.glassBorderStrong,
                     borderLeftColor: theme.colors.glassBorderStrong,
+                    borderRadius: theme.borderRadii[radius],
                   }
                 : undefined
             }

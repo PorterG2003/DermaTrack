@@ -4,10 +4,19 @@ import { api } from '../convex/_generated/api';
 interface SummarizationData {
   testName: string;
   testDescription?: string;
-  userProfile: {
-    skinType?: string;
-    primaryConcerns?: string[];
-    goals?: string[];
+  userSignals?: {
+    areasAffected?: string[];
+    itchy?: boolean;
+    allBumpsLookSame?: boolean;
+    comedonesPresent?: boolean;
+    middayShineTzone?: boolean;
+    middayShineCheeks?: boolean;
+    feelsTightAfterCleanse?: boolean;
+    visibleFlakingDaysPerWeek?: number;
+    usesMoisturizerDaily?: boolean;
+    usesSunscreenDaily?: boolean;
+    hotHumidExposure?: string;
+    stressNow_0to10?: number;
   };
   answers: Array<{
     question: string;

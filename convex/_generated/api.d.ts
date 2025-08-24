@@ -20,7 +20,10 @@ import type * as http from "../http.js";
 import type * as photos from "../photos.js";
 import type * as testCheckins from "../testCheckins.js";
 import type * as tests from "../tests.js";
+import type * as userMedications from "../userMedications.js";
 import type * as userProfiles from "../userProfiles.js";
+import type * as userRoutineProducts from "../userRoutineProducts.js";
+import type * as userSignals from "../userSignals.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -38,7 +41,10 @@ declare const fullApi: ApiFromModules<{
   photos: typeof photos;
   testCheckins: typeof testCheckins;
   tests: typeof tests;
+  userMedications: typeof userMedications;
   userProfiles: typeof userProfiles;
+  userRoutineProducts: typeof userRoutineProducts;
+  userSignals: typeof userSignals;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

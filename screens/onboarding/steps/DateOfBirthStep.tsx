@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Text } from '../../../components';
-import { OnboardingButton } from '../../../components/onboarding';
 import { Input } from '../../../components/ui';
+import { Button } from '../../../components/ui/buttons/Button';
 import { Profile } from '../../../hooks/useProfile';
 import { useThemeContext } from '../../../theme/ThemeContext';
 
@@ -194,22 +194,27 @@ export function DateOfBirthStep({
         }}>
           {!isFirstStep && (
             <View style={{ flex: 1 }}>
-              <OnboardingButton
-                title="Back"
+              <Button
+                variant="glass"
+                size="medium"
+                style={{ width: '100%' }}
                 onPress={onPrevious}
-                variant="secondary"
-              />
+              >
+                Back
+              </Button>
             </View>
           )}
           
           <View style={{ flex: 1 }}>
-            <OnboardingButton
-              title={isLastStep ? "Get Started" : "Next"}
+            <Button
+              variant="glass"
+              size="medium"
+              style={{ width: '100%' }}
               onPress={handleNext}
-              variant="primary"
               disabled={!canProceed || isLoading}
-              loading={isLoading}
-            />
+            >
+              {isLastStep ? "Get Started" : "Next"}
+            </Button>
           </View>
         </View>
       </View>

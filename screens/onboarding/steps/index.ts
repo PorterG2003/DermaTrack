@@ -1,9 +1,6 @@
-export { WelcomeStep } from './WelcomeStep';
-export { GenderStep } from './GenderStep';
-export { DateOfBirthStep } from './DateOfBirthStep';
-export { SkinTypeStep } from './SkinTypeStep';
-export { PrimaryConcernsStep } from './PrimaryConcernsStep';
-export { PhotoPermissionsStep } from './PhotoPermissionsStep';
-export { NotificationsStep } from './NotificationsStep';
-export { GoalsStep } from './GoalsStep';
 export { CompleteStep } from './CompleteStep';
+export { DateOfBirthStep } from './DateOfBirthStep';
+export { NotificationsStep } from './NotificationsStep';
+export { PhotoPermissionsStep } from './PhotoPermissionsStep';
+export { WelcomeStep } from './WelcomeStep';
+

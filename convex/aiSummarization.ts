@@ -5,10 +5,19 @@ import { action, mutation } from "./_generated/server";
 interface SummarizationData {
   testName: string;
   testDescription?: string;
-  userProfile: {
-    skinType?: string;
-    primaryConcerns?: string[];
-    goals?: string[];
+  userSignals?: {
+    areasAffected?: string[];
+    itchy?: boolean;
+    allBumpsLookSame?: boolean;
+    comedonesPresent?: boolean;
+    middayShineTzone?: boolean;
+    middayShineCheeks?: boolean;
+    feelsTightAfterCleanse?: boolean;
+    visibleFlakingDaysPerWeek?: number;
+    usesMoisturizerDaily?: boolean;
+    usesSunscreenDaily?: boolean;
+    hotHumidExposure?: string;
+    stressNow_0to10?: number;
   };
   answers: Array<{
     question: string;
@@ -43,11 +52,20 @@ export const generateCheckInSummary = action({
     summarizationData: v.object({
       testName: v.string(),
       testDescription: v.optional(v.string()),
-      userProfile: v.object({
-        skinType: v.optional(v.string()),
-        primaryConcerns: v.optional(v.array(v.string())),
-        goals: v.optional(v.array(v.string())),
-      }),
+      userSignals: v.optional(v.object({
+        areasAffected: v.optional(v.array(v.string())),
+        itchy: v.optional(v.boolean()),
+        allBumpsLookSame: v.optional(v.boolean()),
+        comedonesPresent: v.optional(v.boolean()),
+        middayShineTzone: v.optional(v.boolean()),
+        middayShineCheeks: v.optional(v.boolean()),
+        feelsTightAfterCleanse: v.optional(v.boolean()),
+        visibleFlakingDaysPerWeek: v.optional(v.number()),
+        usesMoisturizerDaily: v.optional(v.boolean()),
+        usesSunscreenDaily: v.optional(v.boolean()),
+        hotHumidExposure: v.optional(v.string()),
+        stressNow_0to10: v.optional(v.number()),
+      })),
       answers: v.array(v.object({
         question: v.string(),
         answer: v.union(v.string(), v.number(), v.boolean()),
@@ -141,7 +159,7 @@ async function generateOpenAISummary(data: SummarizationData): Promise<string> {
 }
 
 function createSummarizationPrompt(data: SummarizationData): string {
-  const { testName, testDescription, userProfile, answers, checkInDate } = data;
+  const { testName, testDescription, userSignals, answers, checkInDate } = data;
   
   let prompt = `Analyze this skin care check-in and provide a helpful summary in markdown format:\n\n`;
   prompt += `**Test:** ${testName}\n`;
@@ -150,16 +168,48 @@ function createSummarizationPrompt(data: SummarizationData): string {
   }
   prompt += `**Date:** ${checkInDate}\n\n`;
   
-  if (userProfile.skinType) {
-    prompt += `**Skin Type:** ${userProfile.skinType}\n`;
+  if (userSignals) {
+    prompt += `**User Context:**\n`;
+    if (userSignals.areasAffected?.length) {
+      prompt += `- Areas affected: ${userSignals.areasAffected.join(", ")}\n`;
+    }
+    if (userSignals.itchy !== undefined) {
+      prompt += `- Itchy: ${userSignals.itchy ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.allBumpsLookSame !== undefined) {
+      prompt += `- All bumps look same: ${userSignals.allBumpsLookSame ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.comedonesPresent !== undefined) {
+      prompt += `- Comedones present: ${userSignals.comedonesPresent ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.middayShineTzone !== undefined) {
+      prompt += `- Midday shine (T-zone): ${userSignals.middayShineTzone ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.middayShineCheeks !== undefined) {
+      prompt += `- Midday shine (cheeks): ${userSignals.middayShineCheeks ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.feelsTightAfterCleanse !== undefined) {
+      prompt += `- Feels tight after cleanse: ${userSignals.feelsTightAfterCleanse ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.visibleFlakingDaysPerWeek !== undefined) {
+      prompt += `- Visible flaking (days/week): ${userSignals.visibleFlakingDaysPerWeek}\n`;
+    }
+    if (userSignals.usesMoisturizerDaily !== undefined) {
+      prompt += `- Uses moisturizer daily: ${userSignals.usesMoisturizerDaily ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.usesSunscreenDaily !== undefined) {
+      prompt += `- Uses sunscreen daily: ${userSignals.usesSunscreenDaily ? "Yes" : "No"}\n`;
+    }
+    if (userSignals.hotHumidExposure) {
+      prompt += `- Hot/humid exposure: ${userSignals.hotHumidExposure}\n`;
+    }
+    if (userSignals.stressNow_0to10 !== undefined) {
+      prompt += `- Current stress level (0-10): ${userSignals.stressNow_0to10}\n`;
+    }
+    prompt += `\n`;
   }
-  if (userProfile.primaryConcerns?.length) {
-    prompt += `**Primary Concerns:** ${userProfile.primaryConcerns.join(", ")}\n`;
-  }
-  if (userProfile.goals?.length) {
-    prompt += `**Goals:** ${userProfile.goals.join(", ")}\n`;
-  }
-  prompt += `\n**Check-in Answers:**\n`;
+  
+  prompt += `**Check-in Answers:**\n`;
   
   answers.forEach((answer, index) => {
     prompt += `${index + 1}. **${answer.question}**\n   Answer: ${answer.answer}\n`;
@@ -171,7 +221,7 @@ function createSummarizationPrompt(data: SummarizationData): string {
   prompt += `## Patterns & Changes\n`;
   prompt += `- [Any notable patterns or changes]\n\n`;
   prompt += `## Personalized Insights\n`;
-  prompt += `- [Relevant insights based on skin type and goals]\n\n`;
+  prompt += `- [Relevant insights based on user context and signals]\n\n`;
   prompt += `## Recommendations\n`;
   prompt += `- [Brief actionable advice if applicable]\n\n`;
   prompt += `Keep the summary under 200 words and focus on what's most relevant to this specific check-in. Use markdown formatting for better readability.`;
